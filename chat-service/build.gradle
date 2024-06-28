@@ -1,0 +1,83 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.1'
+	id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'site.toeicdoit'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+bootJar {
+	enabled = false
+}
+
+jar {
+	enabled = true
+}
+
+dependencies {
+	// Spring Boot
+	// implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-devtools'
+
+	// Eureka
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client', version: '4.1.2'
+
+	// Hateoas
+	// implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+
+	// AMQP
+	// implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+	// Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// MongoDB
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+	// implementation group: 'org.mongodb', name: 'mongodb-driver-sync'
+	// implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+	// Redis
+	// implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+
+	// Kafka
+	// implementation 'org.springframework.kafka:spring-kafka'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
+
+	// Logging
+	implementation 'org.apache.logging.log4j:log4j-api'
+	implementation 'org.apache.logging.log4j:log4j-core'
+
+	// Swagger
+	// implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'
+	// implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.14'
+
+	// JUnit
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
+
+// tasks.named('test') {
+// 	useJUnitPlatform()
+// }

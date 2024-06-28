@@ -1,5 +1,5 @@
 rootProject.name = 'multi-module'
-// include 'user-service'
+include 'user-service'
 include 'toeic-service'
 include 'tx-service'
 include 'chat-service'

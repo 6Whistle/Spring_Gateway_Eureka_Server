@@ -46,6 +46,9 @@ dependencies {
 	// gateway
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
 
+	// circuit breaker
+	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j'
+
 	// eureka
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	
@@ -74,6 +77,12 @@ dependencies {
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// OAuth
+	implementation 'org.springframework.security:spring-security-oauth2-client'
+
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 }
 
 dependencyManagement {

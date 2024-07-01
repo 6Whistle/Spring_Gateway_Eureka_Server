@@ -1,7 +1,10 @@
 package site.toeicdoit.gateway.handler;
 
 
+import java.net.URI;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.WebFilterExchange;
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
@@ -30,8 +33,9 @@ public class CustomAuthenticationSuccessHandler implements ServerAuthenticationS
         log.info("::::::authentication 정보: "+authentication);
         log.info("::::::getAuthorities 정보: "+authentication.getAuthorities());
         log.info("::::::getCredentials 정보: "+authentication.getCredentials());
-        
-        webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.OK);
+
+        webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
+        webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("http://localhost:3000/check"));
         webFilterExchange.getExchange().getResponse().getHeaders().add("Content-Type", "application/json");
 
         return webFilterExchange.getExchange().getResponse()

@@ -35,7 +35,6 @@ public class WebSecurityConfig {
             .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             .httpBasic(i -> i.disable())
             .csrf(i -> i.disable())
-            .cors(i -> i.disable())
             .formLogin(i -> i.disable())
             .oauth2Login(oauth -> oauth
                 .authorizationRequestResolver(serverOAuth2AuthorizationRequestResolver())

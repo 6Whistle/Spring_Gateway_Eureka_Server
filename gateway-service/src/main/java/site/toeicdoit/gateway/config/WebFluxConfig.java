@@ -13,7 +13,7 @@ public class WebFluxConfig implements WebFluxConfigurer{
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**")
         .allowedOrigins("*")
-        .allowedMethods("GET", "POST", "PUT", "DELETE")
+        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
         .allowedHeaders("*")
         ;
     }

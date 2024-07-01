@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import site.toeicdoit.user.domain.dto.UserDto;
 import site.toeicdoit.user.domain.vo.Messenger;
 import site.toeicdoit.user.domain.vo.PageRequestVo;
 import site.toeicdoit.user.service.UserService;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -20,43 +18,37 @@ import java.util.Optional;
 @Slf4j
 public class UserController {
 
-    private final UserService userService;
+    private final UserService service;
 
     @SuppressWarnings("static-access")
-    @GetMapping("/list")
+    @GetMapping("/findAll")
     public ResponseEntity<List<UserDto>> findAll(PageRequestVo vo) {
-        return ResponseEntity.ok(userService.findAll());
+        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/detail")
     public ResponseEntity<Optional<UserDto>> findById(@RequestParam("id") Long id) {
-        return ResponseEntity.ok(userService.findById(id));
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @PutMapping("/modify")
     public ResponseEntity<Messenger> modify(@RequestBody UserDto param) {
-        return ResponseEntity.ok(userService.modify(param));
+        return ResponseEntity.ok(service.modify(param));
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Messenger> deleteById(@RequestParam("id") Long id) {
-        return ResponseEntity.ok(userService.deleteById(id));
+        return ResponseEntity.ok(service.deleteById(id));
     }
 
-//    @PostMapping("/search")
-//    public ResponseEntity<List<UserDto>> findUsersByName(@RequestBody UserDto param) {
-//        return ResponseEntity.ok(userService.findUsersByName(param.getName()));
-//    }
-
-    @GetMapping("/exists")
-    public ResponseEntity<Boolean> existsById(@RequestParam("id") long id) {
-        return ResponseEntity.ok(userService.existsById(id));
+    @GetMapping("/exists-id")
+    public ResponseEntity<Boolean> existsById(@RequestParam("id") Long id) {
+        return ResponseEntity.ok(service.existsById(id));
     }
 
-//    @GetMapping("/logout")
-//    public ResponseEntity<Boolean> logout(@RequestHeader("Authorization") String accessToken){
-//        log.info("logout RequestHeader con : {}", accessToken);
-//        var flag = userService.logout(accessToken);
-//        return ResponseEntity.ok(flag);
-//    }
+    @GetMapping("/count")
+    public ResponseEntity<Messenger> count() {
+        return ResponseEntity.ok(service.count());
+    }
+
 }

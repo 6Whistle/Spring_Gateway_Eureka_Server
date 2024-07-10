@@ -29,8 +29,8 @@ public interface UserService extends CommandService<UserDto>, QueryService<UserD
                 .phone(userModel.getPhone())
                 .toeicLevel(userModel.getToeicLevel())
                 .registration(userModel.getRegistration())
-                .role(userModel.getRoleModels().toString())
-                .calenderId(userModel.getCalenderId().getId())
+                .role(userModel.getRoleIds().toString())
+                .calenderId(userModel.getCalendarId().getId())
                 .build();
     }
 

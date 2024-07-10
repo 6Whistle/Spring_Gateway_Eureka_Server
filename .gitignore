@@ -37,3 +37,8 @@ out/
 .vscode/
 
 .git/*
+
+mongodb/*
+mysql/*
+postgres/*
+redis/*

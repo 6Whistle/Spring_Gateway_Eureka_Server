@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PreDestroy;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import site.toeicdoit.chat.domain.dto.ChatDTO;
+import site.toeicdoit.chat.domain.dto.Messenger;
 import site.toeicdoit.chat.domain.dto.RoomDTO;
 import site.toeicdoit.chat.domain.model.ChatFluxModel;
 import site.toeicdoit.chat.domain.model.RoomFluxModel;
@@ -28,6 +30,8 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final ChatRepository chatRepository;
     private final Map<String, Sinks.Many<ServerSentEvent<ChatDTO>>> chatSinks;
+
+    private final KafkaTemplate<String, ChatFluxModel> kafkaTemplate;
 
     @PreDestroy
     public void close() {
@@ -150,5 +154,31 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Mono<Integer> countConnection() {
         return Mono.just(chatSinks.size());
+    }
+
+    @Override
+    public Mono<Messenger> create(RoomDTO dto) {
+        roomRepository.save(
+            RoomFluxModel.builder()
+                .title(dto.getTitle())
+                .admins(dto.getMembers())
+                .build()
+        )
+        .flatMap(i -> Mono.just(
+            Messenger.builder()
+                .message("SUCCESS")
+                .data(i)
+            .build()
+        ));
+        return Mono.just(new Messenger());
+    }
+
+    @Override
+    public Mono<Messenger> delete(RoomDTO dto) {
+        // roomRepository.deleteById(dto.getId())
+        // .flatMap(i -> Mono.just(
+        //     kafkaTemplate.
+        // ))
+        return null;
     }
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +42,6 @@ public class ToeicModel extends BaseModel {
     @OneToMany(mappedBy = "toeicId", fetch = FetchType.LAZY)
     private List<ResultModel> resultIds;
 
-    @OneToMany(mappedBy = "toeicId", fetch = FetchType.LAZY)
-    private List<OptionModel> optionIds;
+    @OneToOne(mappedBy = "toeicId", fetch = FetchType.LAZY)
+    private OptionModel optionId;
 }

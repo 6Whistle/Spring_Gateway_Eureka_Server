@@ -1,6 +1,9 @@
 package site.toeicdoit.user.controller;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +33,11 @@ public class AuthController {
     }
 
     @PostMapping("/oauth2/{registration}")
-    public ResponseEntity<Messenger> oauthLogin(@RequestBody UserDto dto) {
+    // public ResponseEntity<Messenger> oauthLogin(@RequestBody UserDto dto) {
+    public Boolean oauthLogin(@RequestBody Map<String, Object> dto) {
         log.info(">>> oauthJoin con 진입: {}", dto);
-        return ResponseEntity.ok(service.save(dto));
+        return true;
+        // return ResponseEntity.ok(service.save(dto));
     }
 
 

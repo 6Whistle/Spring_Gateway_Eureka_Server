@@ -34,7 +34,7 @@ public class PrincipalOauthUserService implements ReactiveOAuth2UserService<OAut
         .flatMap(attributes -> 
             Mono.just(userRequest.getClientRegistration().getClientName())
             .log()
-            .flatMap(clientId -> Mono.just(Registration.getRegistration(clientId)))
+            .flatMap(clientId -> Mono.just(Registration.valueOf(clientId.toUpperCase())))
             .flatMap(registration -> 
                 Mono.just(OAuth2UserInfo.of(registration, attributes))
                 .flatMap(oAuth2UserInfo -> 

@@ -33,6 +33,10 @@ repositories {
     mavenCentral()
 }
 
+ext {
+	set('springCloudVersion', "2023.0.2")
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
@@ -68,6 +72,14 @@ dependencies {
 //    //oauth2
 //    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    //config
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 // gradle clean 시에 QClass 디렉토리 삭제

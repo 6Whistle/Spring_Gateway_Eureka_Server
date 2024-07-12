@@ -20,6 +20,7 @@ public class BoardModel extends BaseModel {
     private String title;
     private String content;
     private String type;
+    private String category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

@@ -51,6 +51,9 @@ dependencies {
 
 	// eureka
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+	// config
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	
 	// jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'

@@ -15,6 +15,7 @@ public class WebFluxConfig implements WebFluxConfigurer{
         .allowedOrigins("*")
         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
         .allowedHeaders("*")
+        .allowCredentials(true)
         ;
     }
 }

@@ -1,0 +1,9 @@
+server:
+    port: 8082
+spring:
+    application:
+        name: user-service
+    profiles:
+        active: local
+    config:
+        import: optional:configserver:http://localhost:8888

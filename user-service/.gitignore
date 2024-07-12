@@ -22,7 +22,6 @@ bin/
 *.iws
 *.iml
 *.ipr
-*.yml
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
@@ -38,10 +37,3 @@ out/
 .vscode/
 
 ### Security ###
-application.yml
-<<<<<<< HEAD
-.env
-src/main/generated
-=======
-.env
->>>>>>> a23585f446517e860375eec3afc0072f9f886239

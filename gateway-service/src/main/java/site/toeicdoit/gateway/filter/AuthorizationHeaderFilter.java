@@ -3,6 +3,7 @@ package site.toeicdoit.gateway.filter;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 
@@ -23,6 +24,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import site.toeicdoit.gateway.domain.vo.Role;
 
 @Slf4j
 @Component
@@ -57,6 +59,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     public static class Config {
         private String headerName;
         private String headerValue;
+        private List<Role> roles;
     }
 
     @Override

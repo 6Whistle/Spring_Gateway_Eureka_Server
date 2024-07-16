@@ -8,6 +8,9 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
+import site.toeicdoit.gateway.domain.model.PrincipalUserDetails;
+import site.toeicdoit.gateway.domain.model.UserModel;
+import site.toeicdoit.gateway.domain.vo.Role;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
@@ -33,8 +36,6 @@ public class JwtTokenProvider{
     
     private ReactiveValueOperations<String, String> reactiveValueOperations;
 
-    private SecretKey SECRET_KEY;
-
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -51,8 +52,11 @@ public class JwtTokenProvider{
 
     @PostConstruct
     protected void init() {
-        SECRET_KEY = Keys.hmacShaKeyFor(Base64.getUrlEncoder().encode(secretKey.getBytes()));
         reactiveValueOperations = reactiveRedisTemplate.opsForValue();
+    }
+
+    private SecretKey getSecretKey(){
+        return Keys.hmacShaKeyFor(Base64.getUrlEncoder().encode(secretKey.getBytes()));
     }
 
     public String extractEmail(String jwt){
@@ -82,7 +86,7 @@ public class JwtTokenProvider{
                 .claim("type", isRefreshToken ? "refresh" : "access")
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now().plusSeconds(isRefreshToken ? refreshTokenExpired : accessTokenExpired)))
-                .signWith(SECRET_KEY, Jwts.SIG.HS256)
+                .signWith(getSecretKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -93,7 +97,7 @@ public class JwtTokenProvider{
     private Claims extractAllClaims(String jwt){
         try {
             return Jwts.parser()
-                    .verifyWith(SECRET_KEY)
+                    .verifyWith(getSecretKey())
                     .build()
                     .parseSignedClaims(jwt)
                     .getPayload();
@@ -102,11 +106,33 @@ public class JwtTokenProvider{
         }
     }
 
-    public Boolean isTokenValid(String token) {
-        return !isTokenExpired(token);
+    public Boolean isTokenValid(String token, Boolean isRefreshToken) {
+        return !isTokenExpired(token)
+        && isTokenTypeEqual(token, isRefreshToken);
+    }
+
+    public Mono<Boolean> isTokenInRedis(String token){
+        return reactiveValueOperations.get(token)
+        .flatMap(i -> Mono.just(i != null));
     }
 
     private Boolean isTokenExpired(String token){
         return extractClaim(token, Claims::getExpiration).before(Date.from(Instant.now()));
+    }
+
+    private Boolean isTokenTypeEqual(String token, Boolean isRefreshToken){
+        return extractClaim(token, i -> i.get("type", String.class)).equals(isRefreshToken ? "refresh" : "access");
+    }
+
+    public String removeBearer(String bearerToken){
+        return bearerToken.replace("Bearer ", "");
+    }
+
+    public PrincipalUserDetails extractPrincipalUserDetails(String jwt){
+        return new PrincipalUserDetails(UserModel.builder().email(extractEmail(jwt)).roles(extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList()).build());
+    }
+
+    public Mono<Boolean> removeTokenInRedis(String token){
+        return reactiveValueOperations.delete(token);
     }
 }

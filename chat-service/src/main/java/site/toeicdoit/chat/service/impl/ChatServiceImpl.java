@@ -37,6 +37,7 @@ public class ChatServiceImpl {
 
     public Flux<ServerSentEvent<ChatFluxModel>> recieve(Integer roomId) {
         return reactiveKafkaConsumerTemplate
+        
         .receiveAutoAck()
         .filter(i -> i.partition() == 1)
         .doOnNext(i -> log.info("Received key={}, value={}, topic={}, offset={}", i.key(), i.value(), i.topic(), i.offset()))   

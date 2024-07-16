@@ -11,6 +11,7 @@ import site.toeicdoit.gateway.service.AuthService;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 
 @RestController
@@ -24,5 +25,13 @@ public class AuthController {
         return authService.localLogin(dto);
     }
 
-    
+    @PostMapping("/refresh")
+    public Mono<ServerResponse> refresh(@RequestHeader(name = "Authorization") String refreshToken) {
+        return authService.refresh(refreshToken);
+    }
+
+    @PostMapping("/logout")
+    public Mono<ServerResponse> logout(@RequestHeader(name = "Authorization") String refreshToken) {
+        return authService.logout(refreshToken);
+    }    
 }

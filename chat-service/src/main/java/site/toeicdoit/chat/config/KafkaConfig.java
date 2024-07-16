@@ -54,7 +54,7 @@ public class KafkaConfig {
             ReceiverOptions.<String, ChatFluxModel>create(consumerProps)
             .addAssignListener(partitions -> log.info("onPartitionsAssigned {}", partitions))
             .addRevokeListener(partitions -> log.info("onPartitionsRevoked {}", partitions))
-            .subscription(List.of("chat"))
+            // .subscription(List.of("chat"))
         );
     }
 

@@ -60,6 +60,40 @@ public class AuthServiceImpl implements AuthService{
             )
         )
         ;
+
+
     }
-    
+
+    @Override
+    public Mono<ServerResponse> refresh(String refreshToken) {
+        return Mono.just(refreshToken)
+        .flatMap(i -> Mono.just(jwtTokenProvider.removeBearer(refreshToken)))
+        .filter(i -> jwtTokenProvider.isTokenValid(refreshToken, true))
+        .filterWhen(i -> jwtTokenProvider.isTokenInRedis(refreshToken))
+        .flatMap(i -> Mono.just(jwtTokenProvider.extractPrincipalUserDetails(refreshToken)))
+        .flatMap(i -> jwtTokenProvider.generateToken(i, false))
+        .flatMap(accessToken -> 
+            ServerResponse.ok()
+            .cookie(
+                ResponseCookie.from("accessToken")
+                .value(accessToken)
+                .maxAge(jwtTokenProvider.getAccessTokenExpired())
+                .path("/")
+                // .httpOnly(true)
+                .build()
+            )
+            .build()    
+        );
+    }
+
+    @Override
+    public Mono<ServerResponse> logout(String refreshToken) {
+        return Mono.just(refreshToken)
+        .flatMap(i -> Mono.just(jwtTokenProvider.removeBearer(refreshToken)))
+        .filter(i -> jwtTokenProvider.isTokenValid(refreshToken, true))
+        .filterWhen(i -> jwtTokenProvider.isTokenInRedis(refreshToken))
+        .filterWhen(i -> jwtTokenProvider.removeTokenInRedis(refreshToken))
+        .flatMap(i -> ServerResponse.ok().build());
+    }
+ 
 }

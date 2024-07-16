@@ -41,8 +41,6 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     
     @Data
     public static class Config {
-        private String headerName;
-        private String headerValue;
         private List<Role> roles;
     }
 

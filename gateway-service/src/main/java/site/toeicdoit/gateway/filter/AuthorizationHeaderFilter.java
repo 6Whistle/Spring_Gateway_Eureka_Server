@@ -22,13 +22,17 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.gateway.domain.vo.Role;
+import site.toeicdoit.gateway.service.provider.JwtTokenProvider;
 
 @Slf4j
 @Component
 public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config>{
+
+    private final JwtTokenProvider jwtTokenProvider;
     
     private static final String BEARER = "Bearer ";
 
@@ -46,8 +50,9 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
     private SecretKey SECRET_KEY;
 
-    public AuthorizationHeaderFilter() {
+    public AuthorizationHeaderFilter(JwtTokenProvider jwtTokenProvider){ 
         super(Config.class);
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostConstruct
@@ -75,16 +80,19 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             if(token == null || token.startsWith(BEARER) == false)
                 return onError(exchange, HttpStatus.UNAUTHORIZED, "No Token or Invalid Token");
 
-            String jwt = token.substring(BEARER.length());
+            String jwt = jwtTokenProvider.removeBearer(token);
 
-            try {
-                if (Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(jwt).getPayload().getExpiration().before(Date.from(Instant.now())))
-                    return onError(exchange, HttpStatus.UNAUTHORIZED, "Token Expired");
-            } catch (Exception e) {
+            if(!jwtTokenProvider.isTokenValid(jwt, false))
                 return onError(exchange, HttpStatus.UNAUTHORIZED, "Invalid Token");
+
+            List<Role> roles = jwtTokenProvider.extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList();
+            
+            for(var i : config.getRoles()){
+                if(roles.contains(i))
+                    return chain.filter(exchange);
             }
             
-            return chain.filter(exchange);
+            return onError(exchange, HttpStatus.UNAUTHORIZED, "No Permission");
         });
     }
 

@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService{
             .flatMap(accessToken -> 
                 jwtTokenProvider.generateToken(i, true)
                 .flatMap(refreshToken -> 
-                    ServerResponse.temporaryRedirect(URI.create("http://localhost:3000"))
+                    ServerResponse.ok()
                     .cookie(
                         ResponseCookie.from("accessToken")
                         .value(accessToken)

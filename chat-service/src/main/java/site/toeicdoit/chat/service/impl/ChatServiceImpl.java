@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.kafka.receiver.KafkaReceiver;
 import site.toeicdoit.chat.domain.dto.ChatDTO;
 import site.toeicdoit.chat.domain.dto.Messenger;
 import site.toeicdoit.chat.domain.model.ChatFluxModel;
@@ -36,8 +37,9 @@ public class ChatServiceImpl {
     }
 
     public Flux<ServerSentEvent<ChatFluxModel>> recieve(Integer roomId) {
+        // KafkaReceiver.create()
+
         return reactiveKafkaConsumerTemplate
-        
         .receiveAutoAck()
         .filter(i -> i.partition() == 1)
         .doOnNext(i -> log.info("Received key={}, value={}, topic={}, offset={}", i.key(), i.value(), i.topic(), i.offset()))   

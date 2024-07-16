@@ -33,31 +33,10 @@ import site.toeicdoit.gateway.service.provider.JwtTokenProvider;
 public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config>{
 
     private final JwtTokenProvider jwtTokenProvider;
-    
-    private static final String BEARER = "Bearer ";
-
-    @Value("${jwt.secret}")
-    private String secretKey;
-
-    @Value("${jwt.issuer}")
-    private String issuer;
-
-    @Value("${jwt.expired.access}")
-    private long accessExpired;
-
-    @Value("${jwt.expired.refresh}")
-    private long refreshExpired;
-
-    private SecretKey SECRET_KEY;
 
     public AuthorizationHeaderFilter(JwtTokenProvider jwtTokenProvider){ 
         super(Config.class);
         this.jwtTokenProvider = jwtTokenProvider;
-    }
-
-    @PostConstruct
-    public void init(){
-        SECRET_KEY = Keys.hmacShaKeyFor(Base64.getUrlEncoder().encodeToString(secretKey.getBytes()).getBytes());
     }
     
     @Data
@@ -77,7 +56,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             @SuppressWarnings("null")
             String token = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
             
-            if(token == null || token.startsWith(BEARER) == false)
+            if(token == null)
                 return onError(exchange, HttpStatus.UNAUTHORIZED, "No Token or Invalid Token");
 
             String jwt = jwtTokenProvider.removeBearer(token);

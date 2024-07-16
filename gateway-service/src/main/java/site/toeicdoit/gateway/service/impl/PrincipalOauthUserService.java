@@ -35,7 +35,7 @@ public class PrincipalOauthUserService implements ReactiveOAuth2UserService<OAut
                 Mono.just(OAuth2UserDTO.of(registration, attributes))
                 .flatMap(oauth2UserDTO -> 
                     webClient.post()
-                    .uri("lb://user-service/auth/oauth2/" + registration)
+                    .uri("lb://user-service/auth/oauth2/" + registration.name().toLowerCase())
                     .accept(MediaType.APPLICATION_JSON)
                     .bodyValue(oauth2UserDTO)
                     .retrieve()

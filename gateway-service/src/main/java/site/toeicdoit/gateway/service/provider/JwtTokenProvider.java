@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveValueOperations;
 import org.springframework.security.core.userdetails.UserDetails;

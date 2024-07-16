@@ -1,9 +1,10 @@
 package site.toeicdoit.gateway.service;
 
+import org.springframework.web.reactive.function.server.ServerResponse;
+
 import reactor.core.publisher.Mono;
 import site.toeicdoit.gateway.domain.dto.LoginDTO;
-import site.toeicdoit.gateway.domain.dto.MessengerDTO;
 
 public interface AuthService {
-    Mono<MessengerDTO> login(LoginDTO dto);
+    Mono<ServerResponse> localLogin(LoginDTO dto);
 }

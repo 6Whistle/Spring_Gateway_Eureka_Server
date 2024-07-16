@@ -1,7 +1,5 @@
 package site.toeicdoit.gateway.service.impl;
 
-import java.net.URI;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;

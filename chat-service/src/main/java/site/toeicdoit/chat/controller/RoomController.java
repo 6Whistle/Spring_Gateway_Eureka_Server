@@ -2,19 +2,17 @@ package site.toeicdoit.chat.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.chat.domain.dto.ChatDTO;
-import site.toeicdoit.chat.domain.dto.Messenger;
 import site.toeicdoit.chat.domain.dto.RoomDTO;
 import site.toeicdoit.chat.domain.model.ChatFluxModel;
-import site.toeicdoit.chat.domain.model.RoomFluxModel;
-import site.toeicdoit.chat.exception.ChatException;
+import site.toeicdoit.chat.service.ChatService;
 import site.toeicdoit.chat.service.RoomService;
-import site.toeicdoit.chat.service.impl.ChatServiceImpl;
 
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,48 +28,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class RoomController {
     private final RoomService roomService;
-    private final ChatServiceImpl chatService;
+    private final ChatService chatService;
 
-    @GetMapping("/checkServer")
-    public Mono<String> getMethodName() {
-        log.info("Check server status");
-        return roomService.countConnection()
-            .flatMap(count -> Mono.just("Server is running. Total connection: " + count));
-    }
-
+    // @GetMapping("/checkServer")
+    // public Mono<String> checkServer() {
+    //     log.info("Check server status");
+    //     return roomService.countConnection()
+    //         .flatMap(count -> Mono.just("Server is running. Total connection: " + count));
+    // }
+        
     @PostMapping("/save")
-    public Mono<RoomFluxModel> saveRoom(@RequestBody RoomDTO dto) {
-        log.info("Save room");
-        return roomService.save(dto);
-    }
-    
-
-    @GetMapping("/recieve/{roomId}")
-    public Flux<ServerSentEvent<ChatFluxModel>> recieve(@PathVariable String roomId) {
-    // public Flux<ServerSentEvent<ChatDTO>> subscribeByRoomId(@PathVariable String roomId) {
-        log.info("subscribe chat by room id {}", roomId);
-        // return roomService.subscribeByRoomId(roomId)
-        // .switchIfEmpty(Flux.error(new ChatException("Room not found")));
-        return chatService.recieve(Integer.parseInt(roomId));
-    }
-
-    @PostMapping("/send")
-    public Mono<Messenger> sendChat(@RequestBody ChatDTO chatDTO) {
-        log.info("Send chat {}", chatDTO.toString());
-        // return roomService.saveChat(chatDTO)
-        // .switchIfEmpty(Mono.error(new ChatException("Room not found")));
-        return chatService.send(chatDTO);
-    }
-    
-    @PostMapping("/create")
-    public Mono<Messenger> create(@RequestBody RoomDTO dto) {
+    public Mono<ServerResponse> save(@RequestBody RoomDTO dto) {
         log.info("Create room");
-        return roomService.create(dto);
+        return roomService.save(dto).flatMap(i -> ServerResponse.ok().bodyValue(i));
     }
 
     @DeleteMapping("/delete")
-    public Mono<Messenger> deleteRoom(@RequestBody RoomDTO dto) {
+    public Mono<ServerResponse> delete(@RequestBody String roomId) {
         log.info("Delete room");
-        return roomService.delete(dto);
+        return roomService.delete(roomId).flatMap(i -> ServerResponse.ok().bodyValue(i));
     }
+
+    @GetMapping("/recieve/{roomId}")
+    public Flux<ServerSentEvent<ChatFluxModel>> recieve(@PathVariable String roomId) {
+        log.info("subscribe chat by room id {}", roomId);
+        return chatService.recieve(roomId);
+    }
+
+    @PostMapping("/send")
+    public Mono<ServerResponse> sendChat(@RequestBody ChatDTO chatDTO) {
+        log.info("Send chat {}", chatDTO.toString());
+        return chatService.save(chatDTO).flatMap(i -> ServerResponse.ok().bodyValue(i));
+    }
+
 }

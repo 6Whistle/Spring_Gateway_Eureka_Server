@@ -39,9 +39,9 @@ public class AuthController {
 
     @PostMapping("/oauth2/{registration}")
     // public ResponseEntity<Messenger> oauthLogin(@RequestBody UserDto dto) {
-    public Boolean oauthLogin(@RequestBody Map<String, Object> dto) {
+    public ResponseEntity<Map<String, Object>> oauthLogin(@RequestBody Map<String, Object> dto) {
         log.info(">>> oauthJoin con 진입: {}", dto);
-        return true;
+        return ResponseEntity.ok(Map.of("user", UserDto.builder().email("test@test").roles(List.of(Role.ROLE_USER)).build()));
         // return ResponseEntity.ok(service.save(dto));
     }
 

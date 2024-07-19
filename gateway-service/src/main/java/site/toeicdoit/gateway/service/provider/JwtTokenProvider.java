@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.gateway.domain.model.PrincipalUserDetails;
 import site.toeicdoit.gateway.domain.model.UserModel;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JwtTokenProvider{
@@ -104,13 +105,13 @@ public class JwtTokenProvider{
                     .parseSignedClaims(jwt)
                     .getPayload();
         } catch (Exception e) {
+            log.error("extractAllClaims Error: {}", e.getMessage());
             throw new GatewayException(ExceptionStatus.UNAUTHORIZED, "Invalid Token");
         }
     }
 
     public Boolean isTokenValid(String token, Boolean isRefreshToken) {
-        return !isTokenExpired(token)
-        && isTokenTypeEqual(token, isRefreshToken);
+        return !isTokenExpired(token) && isTokenTypeEqual(token, isRefreshToken);
     }
 
     public Mono<Boolean> isTokenInRedis(String email, String token){

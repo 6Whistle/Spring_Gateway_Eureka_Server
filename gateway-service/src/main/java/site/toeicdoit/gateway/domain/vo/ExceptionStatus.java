@@ -10,7 +10,7 @@ public enum ExceptionStatus {
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "Invalid Input"),
 
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized"),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden"),
+    NO_PERMISSION(HttpStatus.FORBIDDEN, "No Permission"),
 
     NOT_FOUND(HttpStatus.NOT_FOUND, "Not Found"),
     

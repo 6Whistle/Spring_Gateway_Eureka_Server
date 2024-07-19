@@ -1,5 +1,7 @@
 package site.toeicdoit.user.service;
 
+import java.util.List;
+
 import site.toeicdoit.user.domain.dto.UserDto;
 import site.toeicdoit.user.domain.model.mysql.UserModel;
 import site.toeicdoit.user.domain.vo.Messenger;
@@ -29,7 +31,7 @@ public interface UserService extends CommandService<UserDto>, QueryService<UserD
                 .phone(userModel.getPhone())
                 .toeicLevel(userModel.getToeicLevel())
                 .registration(userModel.getRegistration())
-                .role(userModel.getRoleIds().toString())
+                .roles(List.of(Role.valueOf(userModel.getRoleIds().toString())))
                 .calenderId(userModel.getCalendarId().getId())
                 .build();
     }

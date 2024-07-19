@@ -13,6 +13,7 @@ import site.toeicdoit.chat.domain.model.ChatFluxModel;
 import site.toeicdoit.chat.domain.vo.ExceptionStatus;
 import site.toeicdoit.chat.exception.ChatException;
 import site.toeicdoit.chat.repository.ChatRepository;
+import site.toeicdoit.chat.repository.RoomRepository;
 import site.toeicdoit.chat.service.ChatService;
 import site.toeicdoit.chat.service.provider.KafkaReceiverProvider;
 
@@ -21,21 +22,36 @@ import site.toeicdoit.chat.service.provider.KafkaReceiverProvider;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
+    private final RoomRepository roomRepository;
     private final KafkaReceiverProvider kafkaReceiverProvider;
     private final ReactiveKafkaProducerTemplate<String, ChatFluxModel> reactiveKafkaProducerTemplate;
 
     @Override
-    public Flux<ServerSentEvent<ChatFluxModel>> recieve(String roomId) {
+    public Flux<ServerSentEvent<ChatDTO>> recieve(String roomId) {
         return kafkaReceiverProvider.createKafkaReceiver(roomId)
         .receiveAutoAck()
         .concatMap(r -> r)
         .doOnNext(i -> log.info("Received key={}, value={}, topic={}, offset={}", i.key(), i.value(), i.topic(), i.offset()))
-        .map(record -> ServerSentEvent.builder(record.value()).build());
+        .flatMap(record -> 
+            Mono.just(
+                ChatDTO.builder()
+                .roomId(record.value().getRoomId())
+                .message(record.value().getMessage())
+                .senderId(record.value().getSenderId())
+                .senderName(record.value().getSenderName())
+                .createdAt(record.value().getCreatedAt())
+                .updatedAt(record.value().getUpdatedAt())
+                .build()
+            )
+        )
+        .flatMap(dto -> Mono.just(ServerSentEvent.builder(dto).build()));
     }
 
     @Override
     public Mono<ChatFluxModel> save(ChatDTO dto) {
         return Mono.just(dto)
+        .filterWhen(chatDTO -> roomRepository.existsById(chatDTO.getRoomId()))
+        .switchIfEmpty(Mono.error(new ChatException(ExceptionStatus.INVALID_INPUT, "Room not found")))
         .flatMap(chatDTO -> 
             chatDTO.getId() != null
             ? Mono.error(new ChatException(ExceptionStatus.INVALID_INPUT, "Id must be null"))

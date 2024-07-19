@@ -21,4 +21,5 @@ public class ChatDTO {
     private String senderName;
     private String message;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

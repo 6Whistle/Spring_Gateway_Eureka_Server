@@ -1,16 +1,15 @@
-package site.toeicdoit.chat.domain.dto;
-
-import org.springframework.stereotype.Component;
+package site.toeicdoit.user.domain.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Component
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDTO {
+@Builder
+public class LoginDto {
     private String email;
     private String password;
 }

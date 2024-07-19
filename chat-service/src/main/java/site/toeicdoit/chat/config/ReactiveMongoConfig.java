@@ -19,14 +19,12 @@ public class ReactiveMongoConfig {
     @Bean
     public CommandLineRunner commandLineRunner() {
         mongoTemplate.getCollectionNames()
-        // .flatMap(collectionName -> mongoTemplate.dropCollection(collectionName))
+        .flatMap(collectionName -> mongoTemplate.dropCollection(collectionName))
         .collectList()
-        .flatMapMany(i -> mongoTemplate.findAll(UserFluxModel.class))
-        .collectList()
+        // .flatMapMany(i -> mongoTemplate.findAll(UserFluxModel.class))
+        // .collectList()
         .flatMap(i -> mongoTemplate.insert(RoomFluxModel.builder()
             .title("test room")
-            .members(List.of(i.get(0).getId()))
-            .members(List.of(i.get(0).getId(), i.get(1).getId()))
             .build()
         ))
         .subscribe();

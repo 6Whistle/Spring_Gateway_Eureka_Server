@@ -17,5 +17,5 @@ import lombok.NoArgsConstructor;
 public class RoomDTO {
     private String id;
     private String title;
-    private List<String> members;
+    private List<String> adminId;
 }

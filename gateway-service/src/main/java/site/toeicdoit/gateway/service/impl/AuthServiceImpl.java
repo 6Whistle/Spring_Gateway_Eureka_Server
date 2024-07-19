@@ -1,5 +1,6 @@
 package site.toeicdoit.gateway.service.impl;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.gateway.domain.dto.LoginDTO;
 import site.toeicdoit.gateway.domain.model.PrincipalUserDetails;
+import site.toeicdoit.gateway.domain.vo.ExceptionStatus;
+import site.toeicdoit.gateway.exception.GatewayException;
 import site.toeicdoit.gateway.service.AuthService;
 import site.toeicdoit.gateway.service.provider.JwtTokenProvider;
 
@@ -65,11 +68,15 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public Mono<ServerResponse> refresh(String refreshToken) {
         return Mono.just(refreshToken)
-        .flatMap(i -> Mono.just(jwtTokenProvider.removeBearer(refreshToken)))
-        .filter(i -> jwtTokenProvider.isTokenValid(refreshToken, true))
-        .filterWhen(i -> jwtTokenProvider.isTokenInRedis(refreshToken))
-        .flatMap(i -> Mono.just(jwtTokenProvider.extractPrincipalUserDetails(refreshToken)))
-        .flatMap(i -> jwtTokenProvider.generateToken(i, false))
+        .flatMap(bearerToken -> Mono.just(jwtTokenProvider.removeBearer(bearerToken)))
+        .filter(jwtToken -> jwtTokenProvider.isTokenValid(jwtToken, true))
+        .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED, "Invalid Refresh Token")))
+        .flatMap(jwtToken -> 
+            Mono.just(jwtTokenProvider.extractPrincipalUserDetails(jwtToken))
+            .filterWhen(user -> jwtTokenProvider.isTokenInRedis(user.getUsername(), jwtToken))
+            .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED, "Token not found in Redis")))
+            .flatMap(i -> jwtTokenProvider.generateToken(i, false))
+        )
         .flatMap(accessToken -> 
             ServerResponse.ok()
             .cookie(
@@ -81,17 +88,24 @@ public class AuthServiceImpl implements AuthService{
                 .build()
             )
             .build()    
-        );
+        )
+        .onErrorResume(GatewayException.class, e -> ServerResponse.status(e.getStatus().getStatus().value()).bodyValue(e.getMessage()));
     }
 
     @Override
     public Mono<ServerResponse> logout(String refreshToken) {
         return Mono.just(refreshToken)
-        .flatMap(i -> Mono.just(jwtTokenProvider.removeBearer(refreshToken)))
-        .filter(i -> jwtTokenProvider.isTokenValid(refreshToken, true))
-        .filterWhen(i -> jwtTokenProvider.isTokenInRedis(refreshToken))
-        .filterWhen(i -> jwtTokenProvider.removeTokenInRedis(refreshToken))
-        .flatMap(i -> ServerResponse.ok().build());
+        .flatMap(bearerToken -> Mono.just(jwtTokenProvider.removeBearer(bearerToken)))
+        .filter(jwtToken -> jwtTokenProvider.isTokenValid(jwtToken, true))
+        .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED, "Invalid Refresh Token")))
+        .flatMap(jwtToken -> 
+            Mono.just(jwtTokenProvider.extractPrincipalUserDetails(jwtToken))
+            .filterWhen(user -> jwtTokenProvider.isTokenInRedis(user.getUsername(), jwtToken))
+            .filterWhen(user -> jwtTokenProvider.removeTokenInRedis(user.getUsername()))
+            .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED, "Token not found in Redis")))
+        )
+        .flatMap(i -> ServerResponse.ok().build())
+        .onErrorResume(GatewayException.class, e -> ServerResponse.status(e.getStatus().getStatus().value()).bodyValue(e.getMessage()));
     }
  
 }

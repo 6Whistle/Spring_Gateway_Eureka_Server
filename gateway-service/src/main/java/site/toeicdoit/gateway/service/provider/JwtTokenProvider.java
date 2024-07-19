@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.gateway.domain.model.PrincipalUserDetails;
 import site.toeicdoit.gateway.domain.model.UserModel;
+import site.toeicdoit.gateway.domain.vo.ExceptionStatus;
 import site.toeicdoit.gateway.domain.vo.Role;
+import site.toeicdoit.gateway.exception.GatewayException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
@@ -102,7 +104,7 @@ public class JwtTokenProvider{
                     .parseSignedClaims(jwt)
                     .getPayload();
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new GatewayException(ExceptionStatus.UNAUTHORIZED, "Invalid Token");
         }
     }
 
@@ -111,9 +113,9 @@ public class JwtTokenProvider{
         && isTokenTypeEqual(token, isRefreshToken);
     }
 
-    public Mono<Boolean> isTokenInRedis(String token){
-        return reactiveValueOperations.get(token)
-        .flatMap(i -> Mono.just(i != null));
+    public Mono<Boolean> isTokenInRedis(String email, String token){
+        return reactiveValueOperations.get(email)
+        .flatMap(i -> Mono.just(token.equals(i)));
     }
 
     private Boolean isTokenExpired(String token){
@@ -125,14 +127,14 @@ public class JwtTokenProvider{
     }
 
     public String removeBearer(String bearerToken){
-        return bearerToken.replace("Bearer ", "");
+        return bearerToken.startsWith("Bearer ") ? bearerToken.substring(7) : "";
     }
 
     public PrincipalUserDetails extractPrincipalUserDetails(String jwt){
         return new PrincipalUserDetails(UserModel.builder().email(extractEmail(jwt)).roles(extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList()).build());
     }
 
-    public Mono<Boolean> removeTokenInRedis(String token){
-        return reactiveValueOperations.delete(token);
+    public Mono<Boolean> removeTokenInRedis(String email){
+        return reactiveValueOperations.delete(email);
     }
 }

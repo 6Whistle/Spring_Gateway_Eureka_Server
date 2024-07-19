@@ -1,7 +1,5 @@
 package site.toeicdoit.chat.service.impl;
 
-import java.util.ArrayList;
-
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,6 @@ public class RoomServiceImpl implements RoomService {
     public Mono<RoomFluxModel> save(RoomDTO dto) {
         return roomRepository.save(RoomFluxModel.builder()
                 .title(dto.getTitle())
-                .members(dto == null ? new ArrayList<>() : dto.getMembers())
                 .build());
     }
 
@@ -31,7 +28,6 @@ public class RoomServiceImpl implements RoomService {
                 .flatMap(i -> roomRepository.save(RoomFluxModel.builder()
                         .id(dto.getId())
                         .title(dto.getTitle())
-                        .members(dto.getMembers())
                         .build()));
     }
 

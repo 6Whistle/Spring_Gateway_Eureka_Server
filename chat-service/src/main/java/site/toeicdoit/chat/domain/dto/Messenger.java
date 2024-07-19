@@ -14,9 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Messenger {
     private String message;
+    private Boolean state;
+    private Long count;
     private Object data;
-    private String accessToken;
-    private String refreshToken;
-    private Long accessTokenExpired;
-    private Long refreshTokenExpired;
 }

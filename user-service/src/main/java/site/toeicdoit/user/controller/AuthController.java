@@ -2,12 +2,16 @@ package site.toeicdoit.user.controller;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import site.toeicdoit.user.domain.dto.LoginDto;
+import site.toeicdoit.user.domain.dto.PrincipalUserDetails;
 import site.toeicdoit.user.domain.dto.UserDto;
+import site.toeicdoit.user.domain.model.mysql.UserModel;
 import site.toeicdoit.user.domain.vo.Messenger;
 import site.toeicdoit.user.domain.vo.Role;
 import site.toeicdoit.user.service.UserService;
@@ -20,10 +24,11 @@ import site.toeicdoit.user.service.UserService;
 public class AuthController {
      private final UserService service;
 
-    @PostMapping("/local/login")
-    public ResponseEntity<Role> localLogin(@RequestBody UserDto dto) {
+    @PostMapping("/login/local")
+    public ResponseEntity<Map<String, Object>> localLogin(@RequestBody LoginDto dto) {
         log.info(">>> local login con 진입: {} ", dto);
-        return ResponseEntity.ok(service.localLogin(dto));
+        return ResponseEntity.ok(Map.of("user", UserDto.builder().email(dto.getEmail()).roles(List.of(Role.ROLE_USER)).build()));
+        // return ResponseEntity.ok(service.localLogin(dto));
     }
 
     @PostMapping("/join")

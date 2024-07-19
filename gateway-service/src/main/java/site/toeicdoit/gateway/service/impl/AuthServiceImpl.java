@@ -60,9 +60,10 @@ public class AuthServiceImpl implements AuthService{
                 )
             )
         )
+        .onErrorMap(Exception.class, e -> new GatewayException(ExceptionStatus.UNAUTHORIZED, "Invalid User"))
+        .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED, "Invalid User")))
+        .onErrorResume(GatewayException.class, e -> ServerResponse.status(e.getStatus().getStatus().value()).bodyValue(e.getMessage()))
         ;
-
-
     }
 
     @Override

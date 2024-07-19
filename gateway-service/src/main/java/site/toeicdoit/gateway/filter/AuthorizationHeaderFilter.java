@@ -38,60 +38,23 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
     @Override
     public GatewayFilter apply(Config config) {
-        return ((exchange, chain) -> {
-            
-
-            return Mono.just(exchange)
+        return ((exchange, chain) -> 
+            Mono.just(exchange)
                 .flatMap(i -> Mono.just(exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION)))
                 .flatMap(i -> Mono.just(i.get(0)))
                 .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED,"No Authorization Header")))
-                .log()
                 .filterWhen(i -> Mono.just(i.startsWith("Bearer ")))
                 .flatMap(i -> Mono.just(jwtTokenProvider.removeBearer(i)))
                 .filterWhen(i -> Mono.just(jwtTokenProvider.isTokenValid(i, false)))
                 .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED,"Invalid Token")))
-                .log()
-                .flatMapMany(i -> Flux.just(jwtTokenProvider.extractRoles(i).stream().map(j -> Role.valueOf(j)).toList()))
-                .log()
-                .hasElement(config.getRoles())
-                .log()
+                .flatMapMany(i -> Flux.just(jwtTokenProvider.extractRoles(i).stream().map(j -> Role.valueOf(j)).findAny().orElseGet(() -> Role.ROLE_GUEST)))
+                .any(config.getRoles()::contains)
                 .filter(i -> i)
                 .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.NO_PERMISSION, "No Permission")))
-                .log()
                 .flatMap(i -> chain.filter(exchange))
                 .onErrorResume(GatewayException.class, e -> onError(exchange, HttpStatusCode.valueOf(e.getStatus().getStatus().value()), e.getMessage()))
                 .log()
-                ;
-            
-            // @SuppressWarnings("null")
-            // String token = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
-            
-            // if(token == null)
-            //     return onError(exchange, HttpStatus.UNAUTHORIZED, "No Token or Invalid Token");
-
-            // String jwt = jwtTokenProvider.removeBearer(token);
-
-            // log.info("JWT Token: {}", jwt);
-
-            // log.info("isTokenValid: {}", jwtTokenProvider.isTokenValid(jwt, false));
-
-            // Mono.just(!jwtTokenProvider.isTokenValid(jwt, false))
-            //     .filter(i -> i)
-            //     .flatMap(i -> onError(exchange, HttpStatus.UNAUTHORIZED, "Invalid Token"))
-            //     .subscribe()
-            //     ;
-
-            // List<Role> roles = jwtTokenProvider.extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList();
-
-            // log.info("Roles: {}", roles);
-
-            // for(var i : config.getRoles()){
-            //     if(roles.contains(i))
-            //         return chain.filter(exchange);
-            // }
-            
-            // return onError(exchange, HttpStatus.UNAUTHORIZED, "No Permission");
-        });
+        );
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, HttpStatusCode httpStatusCode, String message){        

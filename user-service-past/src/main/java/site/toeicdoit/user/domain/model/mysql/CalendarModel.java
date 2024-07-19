@@ -1,4 +1,4 @@
-package site.toeicdoit.user.domain.model.jpa;
+package site.toeicdoit.user.domain.model.mysql;
 
 
 import jakarta.persistence.*;
@@ -12,15 +12,14 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @ToString(exclude = {"id"})
-public class CalenderModel extends BaseModel {
+public class CalendarModel extends BaseModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private boolean allDay;
+    private boolean isAllDay;
     @Setter
-    private String start;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 

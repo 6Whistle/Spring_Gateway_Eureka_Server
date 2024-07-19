@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 @Data
 @Builder
 public class ReplyDto {

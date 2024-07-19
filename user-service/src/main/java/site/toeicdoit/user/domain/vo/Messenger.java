@@ -12,10 +12,12 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Messenger {
+    // String 메세지 전달
     private String message;
+    // Boolean 값 전달
+    private Boolean state;
+    // Integer / Long 값 전달
+    private Long count;
+    // Single / List of DTO 전달
     private Object data;
-    private String accessToken;
-    private String refreshToken;
-    private Long accessTokenExpired;
-    private Long refreshTokenExpired;
 }

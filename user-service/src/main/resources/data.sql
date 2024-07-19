@@ -1,4 +1,4 @@
-
+# show tables;
 insert into user_model (email, password, profile, name, phone, toeic_level, registration, created_at, updated_at) values ('kmccamish0@unesco.org', '$2a$04$KVxjdmwuJ3zzFQ7KO7xvAukqhCfR23e6ptNPrqmn07w9pMZsBlH/G', 'http://dummyimage.com/243x100.png/ff4444/ffffff', 'Kipp McCamish', '1047095798', 1, 'LOCAL', now(), now());
 insert into user_model (email, password, profile, name, phone, toeic_level, registration, created_at, updated_at) values ('eyele1@t.co', '$2a$04$GRrg/R0OhJ6FKm.klN0vDulLU59qZ5Dp6otnjrpqMFfA13qOQ2s1.', 'http://dummyimage.com/139x100.png/dddddd/000000', 'Elinore Yele', '3211114310', 2, 'LOCAL', now(), now());
 insert into user_model (email, password, profile, name, phone, toeic_level, registration, created_at, updated_at) values ('alamminam2@army.mil', '$2a$04$9aCleBL.T9C3sNzkBWZMq.1JI1fdK2czsPVcDPIMdUnSWfPIXjYlW', 'http://dummyimage.com/193x100.png/ff4444/ffffff', 'Alasteir Lamminam', '2226191359', 3, 'LOCAL', now(), now());
@@ -25,13 +25,24 @@ insert into board_model (title, content, type, user_Id, created_at, updated_at) 
 
 insert into role_model (role, user_id) values (0, 1);
 insert into role_model (role, user_id) values (1, 2);
-insert into role_model (role, user_id) values (2, 3);
+insert into role_model (role, user_id) values (0, 3);
 insert into role_model (role, user_id) values (0, 4);
 insert into role_model (role, user_id) values (1, 5);
-insert into role_model (role, user_id) values (2, 6);
+insert into role_model (role, user_id) values (1, 6);
 insert into role_model (role, user_id) values (0, 7);
 insert into role_model (role, user_id) values (1, 8);
-insert into role_model (role, user_id) values (2, 9);
+insert into role_model (role, user_id) values (1, 9);
 insert into role_model (role, user_id) values (0, 10);
 insert into role_model (role, user_id) values (1, 10);
-insert into role_model (role, user_id) values (2, 10);
+insert into role_model (role, user_id) values (0, 10);
+
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (1, 'BCF', 0, now(), now(), now(), now());
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (2, 'EPU', 1, now(), now(), now(), now());
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (3, 'LHC', 1, now(), now(), now(), now());
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (4, 'CNL', 0, now(), now(), now(), now());
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (5, 'TJQ', 1, now(), now(), now(), now());
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (6, 'YXL', 0, now(), now(), now(), now());
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (7, 'COE', 1, now(), now(), now(), now());
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (8, 'AJA', 0, now(), now(), now(), now());
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (9, 'LVA', 1, now(), now(), now(), now());
+insert into calendar_model (user_id, title, is_all_day, start_time, end_time, created_at, updated_at) values (10, 'MBE', 0, now(), now(), now(), now());

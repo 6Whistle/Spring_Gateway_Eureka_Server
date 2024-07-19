@@ -1,15 +1,16 @@
 package site.toeicdoit.user.domain.model.mysql;
 
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 @ToString(exclude = {"id"})
 public class BoardModel extends BaseModel {
 

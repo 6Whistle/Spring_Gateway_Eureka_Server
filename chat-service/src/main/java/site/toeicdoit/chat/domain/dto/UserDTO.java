@@ -4,7 +4,7 @@ import java.util.List;
 
 import lombok.Builder;
 import lombok.Data;
-import site.toeicdoit.chat.domain.model.Role;
+import site.toeicdoit.chat.domain.vo.Role;
 
 @Data
 @Builder

@@ -19,6 +19,7 @@ public class CalendarModel extends BaseModel {
     private Long id;
     private String title;
     private boolean isAllDay;
+
     @Setter
     private LocalDateTime startTime;
     private LocalDateTime endTime;

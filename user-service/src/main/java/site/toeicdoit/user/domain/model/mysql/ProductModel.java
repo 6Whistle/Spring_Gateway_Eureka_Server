@@ -28,6 +28,4 @@ public class ProductModel extends BaseModel {
 
     @OneToMany(mappedBy = "productId", fetch = FetchType.LAZY)
     private List<PaymentModel> paymentIds;
-
-
 }

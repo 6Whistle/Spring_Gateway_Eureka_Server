@@ -1,4 +1,4 @@
-package site.toeicdoit.user.domain.model.jpa;
+package site.toeicdoit.user.domain.model.mysql;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -19,8 +19,8 @@ public abstract class BaseModel {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "update_at")
-    private LocalDateTime updateAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
 
 }

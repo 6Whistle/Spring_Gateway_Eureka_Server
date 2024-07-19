@@ -9,7 +9,7 @@ public enum Role {
 
     private int roleCode;
 
-    public static Role getRoleCode(int roleCode) {
+    public static Role getRole(int roleCode) {
         return Stream.of(values()).filter(i -> i.roleCode == roleCode).findFirst().orElse(null);
     }
 }

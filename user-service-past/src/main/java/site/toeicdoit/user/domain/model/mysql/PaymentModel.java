@@ -1,4 +1,4 @@
-package site.toeicdoit.user.domain.model.jpa;
+package site.toeicdoit.user.domain.model.mysql;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +22,7 @@ public class PaymentModel extends BaseModel {
     private Integer amount; // 결제 금액
     @Setter
     private PaymentStatus status; // 결제 상태
+
     @Setter
     private String paymentUid; // 결제 고유 번호
     private LocalDateTime createdAt;

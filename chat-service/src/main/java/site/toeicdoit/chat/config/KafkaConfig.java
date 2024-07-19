@@ -11,7 +11,7 @@ import site.toeicdoit.chat.domain.model.ChatFluxModel;
 @Configuration
 public class KafkaConfig {
     @Bean
-    public ReactiveKafkaProducerTemplate<String, ChatFluxModel> reactiveKafkaConsumerTemplate(KafkaProperties kafkaProperties) {
+    public ReactiveKafkaProducerTemplate<String, ChatFluxModel> reactiveKafkaProducerTemplate(KafkaProperties kafkaProperties) {
         return new ReactiveKafkaProducerTemplate<>(
             SenderOptions.<String, ChatFluxModel>create(kafkaProperties.buildProducerProperties(null))
         );

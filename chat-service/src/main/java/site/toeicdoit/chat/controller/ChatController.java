@@ -8,7 +8,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.chat.domain.dto.ChatDTO;
 import site.toeicdoit.chat.domain.dto.Messenger;
-import site.toeicdoit.chat.domain.model.ChatFluxModel;
 import site.toeicdoit.chat.service.ChatService;
 
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,9 @@ public class ChatController {
      * SSE를 통해 채팅방의 채팅을 구독한다.
      * @param
      * @return ServerSentEvent<ChatFluxModel>
+     * @since 2024-07-19
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
      */
     @GetMapping("/recieve/{roomId}")
     public Flux<ServerSentEvent<ChatDTO>> recieve(@PathVariable String roomId) {
@@ -45,6 +47,9 @@ public class ChatController {
      * 성공 시 data에는 전송된 채팅 정보가 담겨있음.
      * @param
      * @return ResponseEntity<Messenger>
+     * @since 2024-07-19
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
      */
     @PostMapping("/save")
     public Mono<ResponseEntity<Messenger>> save(@RequestBody ChatDTO chatDTO) {

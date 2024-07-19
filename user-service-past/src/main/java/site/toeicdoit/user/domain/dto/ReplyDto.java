@@ -14,4 +14,5 @@ import org.springframework.stereotype.Component;
 public class ReplyDto {
     private Long id;
     private String content;
+    private String writer;
 }

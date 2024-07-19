@@ -1,16 +1,19 @@
 package site.toeicdoit.user.service;
 
-import java.util.List;
-
+import site.toeicdoit.user.domain.dto.LoginResultDto;
+import site.toeicdoit.user.domain.dto.OAuth2UserDto;
 import site.toeicdoit.user.domain.dto.UserDto;
 import site.toeicdoit.user.domain.model.mysql.UserModel;
 import site.toeicdoit.user.domain.vo.Messenger;
 import site.toeicdoit.user.domain.vo.Role;
 
+import java.util.Optional;
+
 public interface UserService extends CommandService<UserDto>, QueryService<UserDto> {
 
     default UserModel dtoToEntity(UserDto dto){
         return UserModel.builder()
+                .id(dto.getId())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
                 .profile(dto.getProfile())
@@ -18,6 +21,7 @@ public interface UserService extends CommandService<UserDto>, QueryService<UserD
                 .phone(dto.getPhone())
                 .toeicLevel(dto.getToeicLevel())
                 .registration(dto.getRegistration())
+                .oauthId(dto.getOauthId())
                 .build();
     }
 
@@ -25,19 +29,23 @@ public interface UserService extends CommandService<UserDto>, QueryService<UserD
         return UserDto.builder()
                 .id(userModel.getId())
                 .email(userModel.getEmail())
-                .password(userModel.getPassword())
                 .profile(userModel.getProfile())
                 .name(userModel.getName())
                 .phone(userModel.getPhone())
                 .toeicLevel(userModel.getToeicLevel())
                 .registration(userModel.getRegistration())
-                .roles(List.of(Role.valueOf(userModel.getRoleIds().toString())))
-                .calenderId(userModel.getCalendarId().getId())
+                .roles(userModel.getRoleIds().stream().map(i -> Role.getRole(i.getRole())).toList())
+                .calendarId(userModel.getCalendarId().getId())
+                .oauthId(userModel.getOauthId())
+                .createdAt(userModel.getCreatedAt())
+                .updatedAt(userModel.getUpdatedAt())
                 .build();
     }
 
-    Messenger count();
-    Messenger modify(UserDto user);
-    Role localLogin(UserDto dto);
-    Messenger existsByEmail(String email);
+    LoginResultDto oauthJoin(OAuth2UserDto dto);
+    LoginResultDto login(UserDto dto);
+    Optional<UserDto> findByEmail(String email);
+
+    Messenger modifyByPassword(UserDto dto);
+    Messenger modifyByKeyword(UserDto dto);
 }

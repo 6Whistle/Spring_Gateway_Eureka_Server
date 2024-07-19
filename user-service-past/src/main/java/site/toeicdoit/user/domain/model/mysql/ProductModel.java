@@ -1,4 +1,4 @@
-package site.toeicdoit.user.domain.model.jpa;
+package site.toeicdoit.user.domain.model.mysql;
 
 import jakarta.persistence.*;
 import lombok.*;

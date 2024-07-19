@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.gateway.domain.dto.LoginDTO;
 import site.toeicdoit.gateway.domain.model.PrincipalUserDetails;
@@ -15,6 +16,7 @@ import site.toeicdoit.gateway.exception.GatewayException;
 import site.toeicdoit.gateway.service.AuthService;
 import site.toeicdoit.gateway.service.provider.JwtTokenProvider;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService{
@@ -33,6 +35,8 @@ public class AuthServiceImpl implements AuthService{
             .retrieve()
             .bodyToMono(PrincipalUserDetails.class)
         )
+        .log()
+        .doOnNext(i -> log.info(">>> PrincipalUserDetails: {}", i.toString()))
         .flatMap(i -> 
             jwtTokenProvider.generateToken(i, false)
             .flatMap(accessToken -> 
@@ -59,6 +63,7 @@ public class AuthServiceImpl implements AuthService{
                 )
             )
         )
+        .log()
         .onErrorMap(Exception.class, e -> new GatewayException(ExceptionStatus.UNAUTHORIZED, "Invalid User"))
         .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED, "Invalid User")))
         .onErrorResume(GatewayException.class, e -> ServerResponse.status(e.getStatus().getStatus().value()).bodyValue(e.getMessage()))

@@ -40,5 +40,4 @@ public class PaymentModel extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscribe_id")
     private SubscribeModel subscribeId;
-
 }

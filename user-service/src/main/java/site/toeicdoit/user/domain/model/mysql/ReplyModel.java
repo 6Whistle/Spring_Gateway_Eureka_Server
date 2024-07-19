@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @Getter
 @ToString(exclude = {"id"})
-public class ReplyModel extends BaseModel {
+public class  ReplyModel extends BaseModel {
 
     @Id
     @Column(name ="id", nullable = false)
@@ -29,6 +29,15 @@ public class ReplyModel extends BaseModel {
 
     @OneToMany(mappedBy = "parentId", orphanRemoval = true)
     private List<ReplyModel> childrenIds;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserModel userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private BoardModel boardId;
+
 
     public ReplyModel(String content) {
         this.content = content;
@@ -49,13 +58,5 @@ public class ReplyModel extends BaseModel {
     public void changeIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserModel userId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
-    private BoardModel boardId;
 
 }

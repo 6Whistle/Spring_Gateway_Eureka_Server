@@ -37,26 +37,27 @@ public class PrincipalOauthUserService implements ReactiveOAuth2UserService<OAut
             .flatMap(clientId -> Mono.just(Registration.valueOf(clientId.toUpperCase())))
             .flatMap(registration -> 
                 Mono.just(OAuth2UserDTO.of(registration, attributes))
-                // .flatMap(oauth2UserDTO -> 
-                //     webClient.post()
-                //     .uri("lb://user-service/auth/oauth2/" + registration.name().toLowerCase())
-                //     .accept(MediaType.APPLICATION_JSON)
-                //     .bodyValue(oauth2UserDTO)
-                //     .retrieve()
-                //     .bodyToMono(PrincipalUserDetails.class)
-                // )
                 .flatMap(oauth2UserDTO -> 
-                    Mono.just(new PrincipalUserDetails(
-                            UserModel.builder()
-                                .email(oauth2UserDTO.email())
-                                .name(oauth2UserDTO.name())
-                                .roles(List.of(Role.ROLE_USER))
-                            .build(),
-                            attributes 
-                        )
-                    )
+                    webClient.post()
+                    .uri("lb://user-service/auth/oauth2/" + registration.name().toLowerCase())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .bodyValue(oauth2UserDTO)
+                    .retrieve()
+                    .bodyToMono(PrincipalUserDetails.class)
                 )
+                // .flatMap(oauth2UserDTO -> 
+                //     Mono.just(new PrincipalUserDetails(
+                //             UserModel.builder()
+                //                 .email(oauth2UserDTO.email())
+                //                 .name(oauth2UserDTO.name())
+                //                 .roles(List.of(Role.ROLE_USER))
+                //             .build(),
+                //             attributes 
+                //         )
+                //     )
+                // )
             )
+            .onErrorResume(e -> Mono.error(new OAuth2AuthenticationException(e.getMessage())))
         )
         ;
     }

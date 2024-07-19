@@ -11,6 +11,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 
 import lombok.RequiredArgsConstructor;
+import site.toeicdoit.gateway.handler.CustomAuthenicationFailureHandler;
 import site.toeicdoit.gateway.handler.CustomAuthenticationSuccessHandler;
 
 @Configuration
@@ -18,6 +19,7 @@ import site.toeicdoit.gateway.handler.CustomAuthenticationSuccessHandler;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final CustomAuthenicationFailureHandler customAuthenicationFailureHandler;
     private final ReactiveClientRegistrationRepository reactiveClientRegistrationRepository;
 
     @Bean
@@ -39,6 +41,7 @@ public class WebSecurityConfig {
             .oauth2Login(oauth -> oauth
                 .authorizationRequestResolver(serverOAuth2AuthorizationRequestResolver())
                 .authenticationSuccessHandler(customAuthenticationSuccessHandler)
+                .authenticationFailureHandler(customAuthenicationFailureHandler)
             )
             .build();
     }

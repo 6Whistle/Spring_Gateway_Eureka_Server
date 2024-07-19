@@ -1,6 +1,5 @@
 package site.toeicdoit.gateway.service.impl;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
@@ -97,11 +96,10 @@ public class AuthServiceImpl implements AuthService{
     public Mono<ServerResponse> logout(String refreshToken) {
         return Mono.just(refreshToken)
         .flatMap(bearerToken -> Mono.just(jwtTokenProvider.removeBearer(bearerToken)))
-        .filter(jwtToken -> jwtTokenProvider.isTokenValid(jwtToken, true))
+        .filter(jwtToken -> jwtTokenProvider.isTokenValid(jwtToken, false))
         .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED, "Invalid Refresh Token")))
         .flatMap(jwtToken -> 
             Mono.just(jwtTokenProvider.extractPrincipalUserDetails(jwtToken))
-            .filterWhen(user -> jwtTokenProvider.isTokenInRedis(user.getUsername(), jwtToken))
             .filterWhen(user -> jwtTokenProvider.removeTokenInRedis(user.getUsername()))
             .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED, "Token not found in Redis")))
         )

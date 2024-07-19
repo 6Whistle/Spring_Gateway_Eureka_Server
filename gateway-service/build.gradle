@@ -60,14 +60,11 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
-	// actuator
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '3.3.1'
+	// // actuator
+	// implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '3.3.1'
 	
-	// MQ
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bus-amqp', version: '4.1.1'
-	
-	// prometheus
-	implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.13.1'
+	// // prometheus
+	// implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.13.1'
 	
 	// springdoc
 	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'

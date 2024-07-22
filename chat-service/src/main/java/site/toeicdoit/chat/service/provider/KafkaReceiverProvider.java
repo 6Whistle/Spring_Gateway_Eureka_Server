@@ -19,7 +19,7 @@ public class KafkaReceiverProvider {
 
     private ReceiverOptions<String, ChatFluxModel> createReceiverOptions(String roomId) {
         Map<String, Object> props = kafkaProperties.buildConsumerProperties(null);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "chat-group-" + (int)(Math.random() * 100));
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "chat-group-" + roomId + "-" + System.currentTimeMillis());
         return ReceiverOptions.<String, ChatFluxModel>create(props).subscription(List.of(roomId));
     }
 

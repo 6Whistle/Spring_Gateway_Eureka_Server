@@ -1,5 +1,7 @@
 package site.toeicdoit.gateway.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -9,6 +11,9 @@ import org.springframework.security.oauth2.client.web.server.DefaultServerOAuth2
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
 import site.toeicdoit.gateway.handler.CustomAuthenicationFailureHandler;
@@ -34,6 +39,7 @@ public class WebSecurityConfig {
             .authorizeExchange(authorize -> 
                 authorize.anyExchange().permitAll()
             )
+            .cors(i -> i.configurationSource(configurationSource()))
             .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             .httpBasic(i -> i.disable())
             .csrf(i -> i.disable())
@@ -44,5 +50,18 @@ public class WebSecurityConfig {
                 .authenticationFailureHandler(customAuthenicationFailureHandler)
             )
             .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource configurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

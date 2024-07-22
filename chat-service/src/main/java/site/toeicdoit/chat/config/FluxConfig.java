@@ -9,12 +9,13 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 @Configuration
 @EnableWebFlux
 public class FluxConfig implements WebFluxConfigurer{
-    @Override
-    public void addCorsMappings(@NonNull CorsRegistry registry) {
-        registry.addMapping("/**")
-        .allowedOrigins("*")
-        .allowedMethods("GET", "POST", "PUT", "DELETE")
-        .allowedHeaders("*")
-        ;
-    }
+    // @Override
+    // public void addCorsMappings(@NonNull CorsRegistry registry) {
+    //     registry.addMapping("/**")
+    //     .allowedOrigins("http://localhost:3000")
+    //     .allowedMethods("GET", "POST", "PUT", "DELETE")
+    //     .allowedHeaders("*")
+    //     .allowCredentials(true)
+    //     ;
+    // }
 }

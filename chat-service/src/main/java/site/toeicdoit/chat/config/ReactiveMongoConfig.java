@@ -1,16 +1,15 @@
 package site.toeicdoit.chat.config;
 
-import java.util.List;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import site.toeicdoit.chat.domain.model.RoomFluxModel;
-import site.toeicdoit.chat.domain.model.UserFluxModel;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class ReactiveMongoConfig {
@@ -27,6 +26,7 @@ public class ReactiveMongoConfig {
             .title("test room")
             .build()
         ))
+        .doOnNext(i -> log.info("{}", i.toString()))
         .subscribe();
 
         return args -> {

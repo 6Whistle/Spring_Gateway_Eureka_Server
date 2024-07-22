@@ -19,6 +19,19 @@ import lombok.RequiredArgsConstructor;
 import site.toeicdoit.gateway.handler.CustomAuthenicationFailureHandler;
 import site.toeicdoit.gateway.handler.CustomAuthenticationSuccessHandler;
 
+/**
+ * WebSecurityConfig
+ * @since 2024-07-22
+ * @version 1.0
+ * @author JunHwei Lee(6whistle)
+ * @see EnableWebFluxSecurity
+ * @see CustomAuthenticationSuccessHandler
+ * @see CustomAuthenicationFailureHandler
+ * @see ReactiveClientRegistrationRepository
+ * @see ServerOAuth2AuthorizationRequestResolver
+ * @see SecurityWebFilterChain
+ * @see CorsConfigurationSource
+ */
 @Configuration
 @EnableWebFluxSecurity
 @RequiredArgsConstructor

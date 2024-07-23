@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import site.toeicdoit.chat.domain.dto.AccessRoomDTO;
 import site.toeicdoit.chat.domain.dto.Messenger;
 import site.toeicdoit.chat.domain.dto.RoomDTO;
 import site.toeicdoit.chat.service.RoomService;
@@ -173,6 +174,37 @@ public class RoomController {
      * <p>성공 시 data에는 입장한 채팅방 정보가 담겨있음.</p>
      * <p>REST API: <b>POST</b></p>
      * <p>Endpoint: <b>/api/room/enter</b></p>
-     * 
+     * @param dto {@link AccessRoomDTO} - {@link RequestBody}
+     * @return {@link Mono}&lt{@link ResponseEntity}&lt{@link Messenger}&gt&gt
+     * @since 2024-07-23
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
      */
+    @PostMapping("/enter")
+    public Mono<ResponseEntity<Messenger>> enter(@RequestBody AccessRoomDTO dto) {
+        log.info("Enter room : {}", dto.toString());
+        return roomService.enter(dto)
+        .flatMap(model -> Mono.just(ResponseEntity.ok(Messenger.builder().message("Enter room successfully").state(Boolean.TRUE).data(roomService.toDTO(model)).build()))
+        );
+    }
+
+    /**
+     * Exit Chatting Room
+     * <p>반환 값 중 state가 true이면 성공, false이면 실패.</p>
+     * <p>성공 시 data에는 퇴장한 채팅방 정보가 담겨있음.</p>
+     * <p>REST API: <b>POST</b></p>
+     * <p>Endpoint: <b>/api/room/exit</b></p>
+     * @param dto {@link AccessRoomDTO} - {@link RequestBody}
+     * @return {@link Mono}&lt{@link ResponseEntity}&lt{@link Messenger}&gt&gt
+     * @since 2024-07-23
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
+     */
+    @PostMapping("/exit")
+    public Mono<ResponseEntity<Messenger>> exit(@RequestBody AccessRoomDTO dto) {
+        log.info("Exit room : {}", dto.toString());
+        return roomService.exit(dto)
+        .flatMap(model -> Mono.just(ResponseEntity.ok(Messenger.builder().message("Exit room successfully").state(Boolean.TRUE).data(roomService.toDTO(model)).build()))
+        );
+    }
 }

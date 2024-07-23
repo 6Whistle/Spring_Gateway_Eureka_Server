@@ -1,6 +1,7 @@
 package site.toeicdoit.chat.service.impl;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import site.toeicdoit.chat.domain.dto.AccessRoomDTO;
 import site.toeicdoit.chat.domain.dto.RoomDTO;
 import site.toeicdoit.chat.domain.model.RoomFluxModel;
 import site.toeicdoit.chat.domain.vo.ExceptionStatus;
@@ -179,5 +181,49 @@ public class RoomServiceImpl implements RoomService {
             case "roomCategories" -> roomRepository.findTypeHasValue(type, value.toUpperCase(), pageable);
             default -> Flux.error(new ChatException(ExceptionStatus.BAD_REQUEST, "Invalid type"));
         };
+    }
+
+    /**
+     * Enter Chatting Room
+     * <p>AccessRoomDTO을 MongoDB에서 찾아 입장한다.</p>
+     * @param dto {@link AccessRoomDTO}
+     * @return {@link Mono}&lt{@link RoomFluxModel}&gt(entered model) or {@link Mono}&lt{@link ChatException}&gt(if error occurs)
+     * @since 2024-07-23
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
+     */
+    @Override
+    public Mono<RoomFluxModel> enter(AccessRoomDTO dto) {
+        return Mono.just(dto.getRoomId())
+        .filter(i -> i != null && !i.isEmpty())
+        .switchIfEmpty(Mono.error(new ChatException(ExceptionStatus.BAD_REQUEST, "Id is empty")))
+        .flatMap(i -> roomRepository.findById(i))
+        .switchIfEmpty(Mono.error(new ChatException(ExceptionStatus.NOT_FOUND, "Room not found")))
+        .doOnNext(roomModel -> roomModel.setMemberIds(Stream.of(roomModel.getMemberIds(), List.of(dto.getUserId())).flatMap(List::stream).distinct().toList()))
+        .flatMap(roomRepository::save)
+        .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_UPDATE_ERROR, "Failed to enter room"))
+        ;
+    }
+
+    /**
+     * Exit Chatting Room
+     * <p>AccessRoomDTO을 MongoDB에서 찾아 퇴장한다.</p>
+     * @param dto {@link AccessRoomDTO}
+     * @return {@link Mono}&lt{@link RoomFluxModel}&gt(exited model) or {@link Mono}&lt{@link ChatException}&gt(if error occurs)
+     * @since 2024-07-23
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
+     */
+    @Override
+    public Mono<RoomFluxModel> exit(AccessRoomDTO dto) {
+        return Mono.just(dto.getRoomId())
+        .filter(i -> i != null && !i.isEmpty())
+        .switchIfEmpty(Mono.error(new ChatException(ExceptionStatus.BAD_REQUEST, "Id is empty")))
+        .flatMap(i -> roomRepository.findById(i))
+        .switchIfEmpty(Mono.error(new ChatException(ExceptionStatus.NOT_FOUND, "Room not found")))
+        .doOnNext(roomModel -> roomModel.setMemberIds(roomModel.getMemberIds().stream().filter(id -> !id.equals(dto.getUserId())).toList()))
+        .flatMap(roomRepository::save)
+        .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_FIND_ERROR, "Failed to find room"))
+        ;
     }
 }

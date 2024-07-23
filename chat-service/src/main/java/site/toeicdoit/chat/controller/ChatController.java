@@ -18,7 +18,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
+/**
+ * Chatting Controller
+ * <p>채팅 관련 요청을 처리하는 컨트롤러</p>
+ * <p>RestController 어노테이션을 통해 Rest API 요청을 Webflux 방식으로 처리한다.</p>
+ * <p>Endpoint: <b>/api/chat</b></p>
+ * @since 2024-07-23
+ * @version 1.0
+ * @author JunHwei Lee(6whistle)
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/chat")

@@ -9,19 +9,38 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import site.toeicdoit.chat.domain.model.RoomFluxModel;
 
+/**
+ * ReactiveMongoConfig
+ * @since 2024-07-23
+ * @version 1.0
+ * @author JunHwei Lee(6whistle)
+ * @see Configuration
+ * @see RequiredArgsConstructor
+ * @see ReactiveMongoTemplate
+ * @see CommandLineRunner
+ */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class ReactiveMongoConfig {
     private final ReactiveMongoTemplate mongoTemplate;
 
+    /**
+     * mongodbInit
+     * <p>Initialize MongoDB</p>
+     * <p>Drop all collections and insert a test room</p>
+     * @return {@link CommandLineRunner}
+     * @since 2024-07-23
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
+     * @see CommandLineRunner
+     * @see ReactiveMongoTemplate
+     */
     @Bean
-    public CommandLineRunner commandLineRunner() {
+    public CommandLineRunner mongodbInit() {
         mongoTemplate.getCollectionNames()
         .flatMap(collectionName -> mongoTemplate.dropCollection(collectionName))
         .collectList()
-        // .flatMapMany(i -> mongoTemplate.findAll(UserFluxModel.class))
-        // .collectList()
         .flatMap(i -> mongoTemplate.insert(RoomFluxModel.builder()
             .title("test room")
             .build()

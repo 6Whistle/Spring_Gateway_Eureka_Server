@@ -9,8 +9,14 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
-
-
+/**
+ * HomeController
+ * <p>Check if the server is running</p>
+ * @since 2024-07-23
+ * @version 1.0
+ * @author JunHwei Lee(6whistle)
+ * @see RestController
+ */
 @RestController
 public class HomeController {
     @GetMapping("/")

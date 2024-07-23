@@ -68,7 +68,7 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource configurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:3000", "http://toeicdoit.site"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

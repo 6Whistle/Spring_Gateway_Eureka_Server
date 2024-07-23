@@ -12,10 +12,10 @@ import site.toeicdoit.chat.domain.dto.ChatDTO;
 import site.toeicdoit.chat.domain.model.ChatFluxModel;
 import site.toeicdoit.chat.domain.vo.ExceptionStatus;
 import site.toeicdoit.chat.exception.ChatException;
+import site.toeicdoit.chat.provider.KafkaReceiverProvider;
 import site.toeicdoit.chat.repository.ChatRepository;
 import site.toeicdoit.chat.repository.RoomRepository;
 import site.toeicdoit.chat.service.ChatService;
-import site.toeicdoit.chat.service.provider.KafkaReceiverProvider;
 
 @Slf4j
 @Service

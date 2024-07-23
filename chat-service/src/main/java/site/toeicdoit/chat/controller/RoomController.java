@@ -89,9 +89,9 @@ public class RoomController {
     @DeleteMapping("/delete")
     public Mono<ServerResponse> delete(@RequestBody RoomDTO dto) {
         log.info("Delete room : {}", dto.toString());
-        return
-        roomService.delete(dto.getId()).flatMap(i -> ServerResponse.ok().bodyValue(i));
+        return roomService.findById(dto.getId())
+        .doOnNext(model -> roomService.delete(model.getId()))
+        .flatMap(i -> Mono.just(Messenger.builder().message("Delete room successfully").state(Boolean.TRUE).data(roomService.toDTO(i)).build()))
+        .flatMap(i -> ServerResponse.ok().bodyValue(i));
     }
-
-    
 }

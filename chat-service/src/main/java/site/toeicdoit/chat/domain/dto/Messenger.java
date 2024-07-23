@@ -7,6 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Messenger
+ * <p>Message Data Transfer Object</p>
+ * @since 2024-07-23
+ * @version 1.0
+ * @author JunHwei Lee(6whistle)
+ */
 @Component
 @Data
 @NoArgsConstructor

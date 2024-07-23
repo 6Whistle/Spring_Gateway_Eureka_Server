@@ -9,6 +9,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * ChatFluxModel
+ * <p>Chat Flux Model</p>
+ * <p>Chat Data Model for MongoDB</p>
+ * @since 2024-07-23
+ * @version 1.0
+ * @author JunHwei Lee(6whistle)
+ * @see BaseFluxModel
+ */
 @Getter
 @Setter
 @NoArgsConstructor

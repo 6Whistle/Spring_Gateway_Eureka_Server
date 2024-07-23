@@ -2,6 +2,7 @@ package site.toeicdoit.chat.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -50,8 +51,8 @@ public class RoomServiceImpl implements RoomService {
                 .adminIds(roomDTO.getAdminIds())
                 .memberIds(roomDTO.getAdminIds())
                 .roomCategories(
-                    roomDTO.getRoomCategroies() != null 
-                    ? roomDTO.getRoomCategroies().stream().map(RoomCategory::toRoomCategory).distinct().toList()
+                    roomDTO.getRoomCategories() != null 
+                    ? roomDTO.getRoomCategories().stream().map(RoomCategory::toRoomCategory).distinct().toList()
                     : List.of(RoomCategory.ETC)
                 )
                 .build()
@@ -84,8 +85,8 @@ public class RoomServiceImpl implements RoomService {
         .doOnNext(roomModel -> roomModel.setAdminIds(dto.getAdminIds() != null ? dto.getAdminIds() : roomModel.getAdminIds()))
         .doOnNext(roomModel -> roomModel.setMemberIds(dto.getMemberIds() != null ? dto.getMemberIds() : roomModel.getMemberIds()))
         .doOnNext(roomModel -> roomModel.setRoomCategories(
-            dto.getRoomCategroies() != null 
-            ? dto.getRoomCategroies().stream().map(RoomCategory::toRoomCategory).distinct().toList()
+            dto.getRoomCategories() != null 
+            ? dto.getRoomCategories().stream().map(RoomCategory::toRoomCategory).distinct().toList()
             : roomModel.getRoomCategories()
         ))
         .flatMap(roomRepository::save)
@@ -162,5 +163,21 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.count()
         .onErrorMap(e -> new ChatException(ExceptionStatus.MONGODB_FIND_ERROR, "Failed to count rooms"))
         ;
+    }
+
+    /**
+     * Find Chatting Room by Category
+     * <p>MongoDB에서 Room을 type에 따라 유동적으로 찾는다.</p>
+     * @param type String
+     * @param pageable {@link Pageable}
+     * 
+     */
+    @Override
+    public Flux<RoomFluxModel> findBy(String type, String value, Pageable pageable) {
+        return switch(type) {
+            case "title" -> roomRepository.findTypeEqualsValue(type, value, pageable);
+            case "roomCategories" -> roomRepository.findTypeHasValue(type, value.toUpperCase(), pageable);
+            default -> Flux.error(new ChatException(ExceptionStatus.BAD_REQUEST, "Invalid type"));
+        };
     }
 }

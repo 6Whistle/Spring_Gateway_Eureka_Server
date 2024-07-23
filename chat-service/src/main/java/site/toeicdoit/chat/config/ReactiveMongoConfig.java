@@ -1,5 +1,7 @@
 package site.toeicdoit.chat.config;
 
+import java.util.List;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +10,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import site.toeicdoit.chat.domain.model.RoomFluxModel;
+import site.toeicdoit.chat.domain.vo.RoomCategory;
 
 /**
  * ReactiveMongoConfig
@@ -43,6 +46,9 @@ public class ReactiveMongoConfig {
         .collectList()
         .flatMap(i -> mongoTemplate.insert(RoomFluxModel.builder()
             .title("test room")
+            .roomCategories(List.of(RoomCategory.ETC))
+            .adminIds(List.of("admin"))
+            .memberIds(List.of("admin"))
             .build()
         ))
         .doOnNext(i -> log.info("{}", i.toString()))

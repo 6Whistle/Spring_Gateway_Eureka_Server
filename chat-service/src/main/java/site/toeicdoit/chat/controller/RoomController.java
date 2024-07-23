@@ -92,7 +92,7 @@ public class RoomController {
     public Mono<ResponseEntity<Messenger>> delete(@RequestBody RoomDTO dto) {
         log.info("Delete room : {}", dto.toString());
         return roomService.findById(dto.getId())
-        .doOnNext(model -> roomService.delete(model.getId()))
+        .doOnNext(model -> roomService.delete(model.getId()).subscribe())
         .flatMap(i -> Mono.just(
                 ResponseEntity.ok(Messenger.builder().message("Delete room successfully").state(Boolean.TRUE).data(roomService.toDTO(i)).build())
         ))
@@ -167,5 +167,12 @@ public class RoomController {
         // return Mono.just(ResponseEntity.ok(new Messenger()));
     }
     
-    
+    /**
+     * Enter Chatting Room
+     * <p>반환 값 중 state가 true이면 성공, false이면 실패.</p>
+     * <p>성공 시 data에는 입장한 채팅방 정보가 담겨있음.</p>
+     * <p>REST API: <b>POST</b></p>
+     * <p>Endpoint: <b>/api/room/enter</b></p>
+     * 
+     */
 }

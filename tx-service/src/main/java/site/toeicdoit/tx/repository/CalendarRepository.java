@@ -17,7 +17,7 @@ public interface CalendarRepository extends JpaRepository<CalendarModel, Long> ,
 //    @Query("select c from calendars c where c.userId.id = :userId")
 //    List<CalendarModel> getCalendarByUserId(@Param("userId") UserModel userId);
 
-    boolean existsByTitleAndAllDayAndStartTimeAndUserId(String title, boolean allDay, LocalDateTime startTime, UserModel userId);
+    boolean existsByTitleAndIsAllDayAndStartTimeAndUserId(String title, boolean isAllDay, LocalDateTime startTime, UserModel userId);
 
     List<CalendarModel> findByUserId(UserModel userId);
 

@@ -2,7 +2,7 @@ package site.toeicdoit.tx.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import site.toeicdoit.tx.enums.PaymentStatus;
+import site.toeicdoit.tx.domain.vo.PaymentStatus;
 
 
 import java.time.LocalDateTime;

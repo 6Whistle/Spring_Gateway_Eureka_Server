@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import site.toeicdoit.tx.enums.Registration;
+import site.toeicdoit.tx.domain.vo.Registration;
 
 @Component
 @AllArgsConstructor

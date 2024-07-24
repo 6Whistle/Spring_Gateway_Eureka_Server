@@ -3,6 +3,8 @@ package site.toeicdoit.tx.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -23,6 +25,6 @@ public class BoardModel extends BaseModel {
     @JoinColumn(name = "user_id")
     private UserModel userId;
 
-    @OneToOne(mappedBy = "boardId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private ReplyModel replyId;
+    @OneToMany(mappedBy = "boardId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReplyModel> replyIds;
 }

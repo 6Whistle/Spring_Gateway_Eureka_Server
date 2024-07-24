@@ -22,8 +22,6 @@ public class SubscribeModel extends BaseModel {
     private Boolean subscribeState;
     @Setter
     private LocalDateTime endDate;
-    private LocalDateTime createdAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserModel userId;

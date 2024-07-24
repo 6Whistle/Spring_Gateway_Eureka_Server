@@ -18,7 +18,7 @@ public class CalendarModel extends BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private boolean allDay;
+    private boolean isAllDay;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 

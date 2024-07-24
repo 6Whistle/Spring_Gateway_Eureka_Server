@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.toeicdoit.tx.domain.vo.Messenger;
 import site.toeicdoit.tx.domain.dto.PaymentDto;
-import site.toeicdoit.tx.service.PaymentService;
+import site.toeicdoit.tx.service.Impl.PaymentServiceImpl;
 
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ import java.util.List;
 @RequestMapping(path = "/api/payment")
 @RequiredArgsConstructor
 public class PaymentController {
-    private final PaymentService paymentService;
+    private final PaymentServiceImpl paymentService;
 
     private final IamportClient iamportClient;
 

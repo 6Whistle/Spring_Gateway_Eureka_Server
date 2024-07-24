@@ -1,0 +1,7 @@
+spring:
+    application:
+        name: tx-service
+    profiles:
+        active: cloud
+    config:
+        import: optional:configserver:http://localhost:8888

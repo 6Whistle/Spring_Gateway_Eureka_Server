@@ -15,18 +15,18 @@ import java.time.LocalDateTime;
 public class CalendarDto {
     private Long id;
     private String title;
-    private boolean allDay;
+    private boolean isAllDay;
     private Long userId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
 
     @QueryProjection
-    public CalendarDto(Long id, String title, boolean allDay, Long userId, LocalDateTime startTime, LocalDateTime endTime) {
+    public CalendarDto(Long id, String title, boolean isAllDay, Long userId, LocalDateTime startTime, LocalDateTime endTime) {
 
         this.id = id;
         this.title = title;
-        this.allDay = allDay;
+        this.isAllDay = isAllDay;
         this.userId = userId;
         this.startTime = startTime;
         this.endTime = endTime;

@@ -1,6 +1,7 @@
 package site.toeicdoit.tx.service;
 
 
+import site.toeicdoit.tx.domain.model.BaseModel;
 import site.toeicdoit.tx.domain.vo.Messenger;
 import site.toeicdoit.tx.domain.dto.SubscribeDto;
 import site.toeicdoit.tx.domain.model.SubscribeModel;
@@ -12,7 +13,6 @@ public interface SubscribeService {
         return SubscribeModel.builder()
                 .id(dto.getId())
                 .userId(UserModel.builder().id(dto.getUserId()).build())
-                .createdAt(dto.getCreatedAt())
                 .endDate(dto.getEndDate())
                 .subscribeState(dto.getSubscribeState())
                 .build();

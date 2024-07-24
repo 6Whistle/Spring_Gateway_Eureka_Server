@@ -23,7 +23,7 @@ public class CalendarServiceImpl implements CalendarService {
     private final CalendarRepository repo;
 
     private boolean isDuplicate(CalendarDto dto) {
-        return repo.existsByTitleAndAllDayAndStartTimeAndUserId(
+        return repo.existsByTitleAndIsAllDayAndStartTimeAndUserId(
                 dto.getTitle(),
                 dto.isAllDay(),
                 dto.getStartTime(),

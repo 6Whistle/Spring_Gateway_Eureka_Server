@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import site.toeicdoit.tx.enums.PaymentStatus;
+import site.toeicdoit.tx.domain.vo.PaymentStatus;
 
 
 import java.time.LocalDateTime;

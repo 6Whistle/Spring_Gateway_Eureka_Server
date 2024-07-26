@@ -45,3 +45,5 @@ secret-service/*
 config-service/*
 
 docker/*
+
+*/*.yml

@@ -24,6 +24,8 @@ repositories {
 	maven { url 'https://jitpack.io' }
 }
 
+jar.enabled = false
+
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'

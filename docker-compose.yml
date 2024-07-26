@@ -9,8 +9,6 @@ services:
       - 8761:8761
     networks:
       - toeicdoit-net
-    depends_on:
-      - config
     hostname: eureka
 
   gateway:
@@ -25,68 +23,63 @@ services:
       - toeicdoit-net
     depends_on:
       - eureka
-      - redis
     hostname: gateway
 
-  # user:
-  #   build:
-  #     context: user-service
-  #     dockerfile: Dockerfile
-  #   image: toeicdoit/user:latest
-  #   container_name: user
-  #   ports:
-  #   - 8091:8091
-  #   networks:
-  #     - toeicdoit-net
-  #   depends_on:
-  #     - eureka
-  #     - mysql
-  #     - mongodb
-  #   hostname: user
+  user:
+    build:
+      context: user-service
+      dockerfile: Dockerfile
+    image: toeicdoit/user:latest
+    container_name: user
+    ports:
+    - 8091:8091
+    networks:
+      - toeicdoit-net
+    depends_on:
+      - eureka
+    hostname: user
 
-  # chat:
-  #   build:
-  #     context: chat-service
-  #     dockerfile: Dockerfile
-  #   image: toeicdoit/chat:latest
-  #   container_name: chat
-  #   ports:
-  #   - 8088:8088
-  #   networks:
-  #     - toeicdoit-net
-  #   depends_on:
-  #     - eureka
-  #     - mongodb
-  #     - kafka
-  #   hostname: chat
+  chat:
+    build:
+      context: chat-service
+      dockerfile: Dockerfile
+    image: toeicdoit/chat:latest
+    container_name: chat
+    ports:
+    - 8088:8088
+    networks:
+      - toeicdoit-net
+    depends_on:
+      - eureka
+    hostname: chat
 
-  # toeic:
-  #   build:
-  #     context: toeic-service
-  #     dockerfile: Dockerfile
-  #   image: toeicdoit/toeic:latest
-  #   container_name: toeic
-  #   ports:
-  #   - 8089:8089
-  #   networks:
-  #     - toeicdoit-net
-  #   depends_on:
-  #     - user
-  #   hostname: toeic
+  toeic:
+    build:
+      context: toeic-service
+      dockerfile: Dockerfile
+    image: toeicdoit/toeic:latest
+    container_name: toeic
+    ports:
+    - 8089:8089
+    networks:
+      - toeicdoit-net
+    depends_on:
+      - user
+    hostname: toeic
 
-  # tx:
-  #   build:
-  #     context: tx-service
-  #     dockerfile: Dockerfile
-  #   image: toeicdoit/tx:latest
-  #   container_name: tx
-  #   ports:
-  #   - 8090:8090
-  #   networks:
-  #     - toeicdoit-net
-  #   depends_on:
-  #     - user
-  #   hostname: tx
+  tx:
+    build:
+      context: tx-service
+      dockerfile: Dockerfile
+    image: toeicdoit/tx:latest
+    container_name: tx
+    ports:
+    - 8090:8090
+    networks:
+      - toeicdoit-net
+    depends_on:
+      - user
+    hostname: tx
 
 
 networks:

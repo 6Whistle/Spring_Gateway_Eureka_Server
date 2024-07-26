@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * @author JunHwei Lee(6whistle)
  */
 public enum RoomCategory {
-    STUDY, FREE, WORK, ETC;
+    STUDY, FREE, WORK, UNI, SEEK, ETC;
 
     /**
      * Mapping String to RoomCategory

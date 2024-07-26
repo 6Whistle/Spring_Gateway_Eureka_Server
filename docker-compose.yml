@@ -1,7 +1,7 @@
 services:
   eureka:
     build:
-      context: eureka-service
+      context: server/eureka-service
       dockerfile: Dockerfile
     image: toeicdoit/eureka:latest
     container_name: eureka
@@ -13,7 +13,7 @@ services:
 
   gateway:
     build:
-      context: gateway-service
+      context: server/gateway-service
       dockerfile: Dockerfile
     image: toeicdoit/gateway:latest
     container_name: gateway
@@ -27,7 +27,7 @@ services:
 
   user:
     build:
-      context: user-service
+      context: service/user-service
       dockerfile: Dockerfile
     image: toeicdoit/user:latest
     container_name: user
@@ -41,7 +41,7 @@ services:
 
   chat:
     build:
-      context: chat-service
+      context: service/chat-service
       dockerfile: Dockerfile
     image: toeicdoit/chat:latest
     container_name: chat
@@ -55,7 +55,7 @@ services:
 
   toeic:
     build:
-      context: toeic-service
+      context: service/toeic-service
       dockerfile: Dockerfile
     image: toeicdoit/toeic:latest
     container_name: toeic
@@ -69,7 +69,7 @@ services:
 
   tx:
     build:
-      context: tx-service
+      context: service/tx-service
       dockerfile: Dockerfile
     image: toeicdoit/tx:latest
     container_name: tx

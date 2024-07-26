@@ -1,0 +1,22 @@
+appVersion: v1
+kind: Service
+metadata:
+  name: toeicdoit-gateway-service
+  labels:
+    app: toeicdoit-gateway-service
+spec:
+  ports:
+  - port: 8000
+    targetPort: 8000
+  - port: 8761
+    targetPort: 8761
+  - port: 8091
+    targetPort: 8091
+  - port: 8088
+    targetPort: 8088
+  - port: 8089
+    targetPort: 8089
+  selector:
+    app: 
+    - toeicdoit-service
+    

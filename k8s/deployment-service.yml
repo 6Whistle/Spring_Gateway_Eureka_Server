@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toeicdoit-deployment
+  labels:
+    app: toeicdoit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: toeicdoit
+  template:
+    metadata:
+      labels:
+        app: toeicdoit
+    spec:
+      containers:
+      - name: toeicdoit-eureka
+        image: 6whistle/eureka:latest
+        ports:
+        - containerPort: 8761
+      - name: toeicdoit-gateway
+        image: 6whistle/gateway:latest
+        ports:
+        - containerPort: 8000
+      - name: toeicdoit-user
+        image: 6whistle/user:latest
+        ports:
+        - containerPort: 8091
+      - name: toeicdoit-chat
+        image: 6whistle/chat:latest
+        ports:
+        - containerPort: 8088
+      - name: toeicdoit-toeic
+        image: 6whistle/toeic:latest
+        ports:
+        - containerPort: 8089
+      - name: toeicdoit-tx
+        image: 6whistle/tx:latest
+        ports:
+        - containerPort: 8090
+      

@@ -46,4 +46,4 @@ config-service/*
 
 docker/*
 
-*/*.yml
+application.yml

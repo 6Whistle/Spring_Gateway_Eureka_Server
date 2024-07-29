@@ -1,22 +1,36 @@
-appVersion: v1
+apiVersion: v1
 kind: Service
 metadata:
   name: toeicdoit-gateway-service
   labels:
     app: toeicdoit-gateway-service
 spec:
+  type: NodePort
   ports:
-  - port: 8000
+  - name: gateway
+    protocol: TCP 
+    port: 8000
     targetPort: 8000
-  - port: 8761
+  - name: eureka
+    protocol: TCP 
+    port: 8761
     targetPort: 8761
-  - port: 8091
+  - name: user
+    protocol: TCP 
+    port: 8091
     targetPort: 8091
-  - port: 8088
+  - name: chat
+    protocol: TCP 
+    port: 8088
     targetPort: 8088
-  - port: 8089
+  - name: toeic
+    protocol: TCP 
+    port: 8089
     targetPort: 8089
+  - name: tx
+    protocol: TCP 
+    port: 8090
+    targetPort: 8090
   selector:
-    app: 
-    - toeicdoit-service
+    app: toeicdoit
     

@@ -146,8 +146,8 @@ public class RoomServiceImpl implements RoomService {
      * @see QueryService#findAll()
      */
     @Override
-    public Flux<RoomFluxModel> findAll() {
-        return roomRepository.findAll()
+    public Flux<RoomFluxModel> findAll(Pageable pageable) {
+        return roomRepository.findAllBy(pageable)
         .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_FIND_ERROR, "Failed to find rooms"));
     }
 
@@ -171,14 +171,20 @@ public class RoomServiceImpl implements RoomService {
      * Find Chatting Room by Category
      * <p>MongoDB에서 Room을 type에 따라 유동적으로 찾는다.</p>
      * @param type String
+     * @param value String
      * @param pageable {@link Pageable}
-     * 
+     * @return {@link Flux}&lt{@link RoomFluxModel}&gt(found models) or {@link Flux}&lt{@link ChatException}&gt(if error occurs)
+     * @since 2024-07-29
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
      */
     @Override
     public Flux<RoomFluxModel> findBy(String type, String value, Pageable pageable) {
         return switch(type) {
             case "title" -> roomRepository.findTypeEqualsValue(type, value, pageable);
             case "roomCategories" -> roomRepository.findTypeHasValue(type, value.toUpperCase(), pageable);
+            case "adminIds" -> roomRepository.findTypeHasValue(type, value, pageable);
+            case "memberIds" -> roomRepository.findTypeHasValue(type, value, pageable);
             default -> Flux.error(new ChatException(ExceptionStatus.BAD_REQUEST, "Invalid type"));
         };
     }

@@ -1,5 +1,6 @@
 package site.toeicdoit.chat.service.impl;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate;
 import org.springframework.stereotype.Service;
@@ -106,7 +107,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Flux<ChatFluxModel> findAll() {
+    public Flux<ChatFluxModel> findAll(Pageable pageable) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }

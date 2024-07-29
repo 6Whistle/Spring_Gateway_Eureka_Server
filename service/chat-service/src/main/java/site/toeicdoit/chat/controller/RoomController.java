@@ -133,9 +133,9 @@ public class RoomController {
      * @author JunHwei Lee(6whistle)
      */
     @GetMapping("/find-all")
-    public Mono<ResponseEntity<Messenger>> findAll() {
+    public Mono<ResponseEntity<Messenger>> findAll(Pageable pageable) {
         log.info("Find all rooms");
-        return roomService.findAll()
+        return roomService.findAll(pageable)
         .flatMap(i -> Mono.just(roomService.toDTO(i)))
         .collectList()
         .flatMap(roomDTO -> Mono.just(

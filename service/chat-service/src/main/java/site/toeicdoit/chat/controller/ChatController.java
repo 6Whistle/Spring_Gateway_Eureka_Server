@@ -66,5 +66,4 @@ public class ChatController {
             Mono.just(ResponseEntity.ok(Messenger.builder().message("Send chat successfully").state(Boolean.TRUE).data(i).build()))
         );
     }
-
 }

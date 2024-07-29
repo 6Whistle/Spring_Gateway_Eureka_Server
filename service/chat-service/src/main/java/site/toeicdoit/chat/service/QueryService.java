@@ -1,5 +1,7 @@
 package site.toeicdoit.chat.service;
 
+import org.springframework.data.domain.Pageable;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,6 +16,6 @@ import reactor.core.publisher.Mono;
  */
 public interface QueryService<Model, DTO> {
     Mono<Model> findById(String id);
-    Flux<Model> findAll();
+    Flux<Model> findAll(Pageable pageable);
     Mono<Long> count();
 }

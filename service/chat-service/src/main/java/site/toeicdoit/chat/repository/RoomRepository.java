@@ -19,6 +19,8 @@ import site.toeicdoit.chat.domain.model.RoomFluxModel;
  */
 @Repository
 public interface RoomRepository extends ReactiveMongoRepository<RoomFluxModel, String>{
+    Flux<RoomFluxModel> findAllBy(Pageable pageable);
+
     Flux<RoomFluxModel> findByTitle(String title, Pageable pageable);
 
     @Query("{ ?0: { $in: [?1] } }")

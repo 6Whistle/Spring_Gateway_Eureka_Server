@@ -37,6 +37,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> 
             Mono.just(exchange)
+                .filter(i -> exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION))
                 .flatMap(i -> Mono.just(exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION)))
                 .flatMap(i -> Mono.just(i.get(0)))
                 .switchIfEmpty(Mono.error(new GatewayException(ExceptionStatus.UNAUTHORIZED,"No Authorization Header")))

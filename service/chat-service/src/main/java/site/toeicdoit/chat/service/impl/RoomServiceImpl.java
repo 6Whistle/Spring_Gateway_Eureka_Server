@@ -182,7 +182,6 @@ public class RoomServiceImpl implements RoomService {
             default -> Flux.error(new ChatException(ExceptionStatus.INVALID_INPUT, "Invalid field"));
             }
         )
-        .switchIfEmpty(Flux.error(new ChatException(ExceptionStatus.INVALID_INPUT)))
         .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_FIND_ERROR, "Failed to find rooms"))
         ;
     }

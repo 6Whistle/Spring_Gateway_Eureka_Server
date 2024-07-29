@@ -18,5 +18,33 @@ import site.toeicdoit.chat.domain.model.ChatFluxModel;
  * @see ChatDTO
  */
 public interface ChatService extends CommandService<ChatFluxModel, ChatDTO>, QueryService<ChatFluxModel, ChatDTO>{
+    /**
+     * Mapping {@link ChatFluxModel} to {@link ChatDTO}
+     * @param model {@link ChatFluxModel}
+     * @return {@link ChatDTO}
+     * @since 2024-07-23
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
+     */
+    default ChatDTO toDTO(ChatFluxModel model) {
+        return ChatDTO.builder()
+        .id(model.getId())
+        .roomId(model.getRoomId())
+        .senderId(model.getSenderId())
+        .message(model.getMessage())
+        .createdAt(model.getCreatedAt())
+        .updatedAt(model.getUpdatedAt())
+        .build();
+    }
+
+    /**
+     * Recieve Chat
+     * <p>채팅을 받는다.</p>
+     * @param roomId String
+     * @return {@link Flux}&lt{@link ServerSentEvent}&lt{@link ChatDTO}&gt&gt
+     * @since 2024-07-23
+     * @version 1.0
+     * @author JunHwei Lee(6whistle)
+     */
     Flux<ServerSentEvent<ChatDTO>> recieve(String roomId);
 }

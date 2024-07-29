@@ -85,7 +85,6 @@ public class RoomServiceImpl implements RoomService {
         .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_FIND_ERROR, "Failed to find room"))
         .doOnNext(roomModel -> roomModel.setTitle(dto.getTitle() != null ? dto.getTitle() : roomModel.getTitle()))
         .doOnNext(roomModel -> roomModel.setAdminIds(dto.getAdminIds() != null ? dto.getAdminIds() : roomModel.getAdminIds()))
-        .doOnNext(roomModel -> roomModel.setMemberIds(dto.getMemberIds() != null ? dto.getMemberIds() : roomModel.getMemberIds()))
         .doOnNext(roomModel -> roomModel.setRoomCategories(
             dto.getRoomCategories() != null 
             ? dto.getRoomCategories().stream().map(RoomCategory::toRoomCategory).distinct().toList()
@@ -107,13 +106,15 @@ public class RoomServiceImpl implements RoomService {
      * @see CommandService#delete(String)
      */
     @Override
-    public Mono<Boolean> delete(String id) {
+    public Mono<RoomFluxModel> delete(String id) {
         return Mono.just(id)
         .filter(i -> i != null && !i.isEmpty())
-        .switchIfEmpty(Mono.error(new ChatException(ExceptionStatus.BAD_REQUEST, "Id is empty")))
-        .flatMap(i -> roomRepository.deleteById(i).thenReturn(Boolean.TRUE))
+        .switchIfEmpty(Mono.error(new ChatException(ExceptionStatus.INVALID_INPUT, "Id is empty")))
+        .flatMap(roomRepository::findById)
+        .flatMap(model -> roomRepository.deleteById(model.getId()).thenReturn(model))
         .switchIfEmpty(Mono.error(new ChatException(ExceptionStatus.NOT_FOUND, "Room not found")))
-        .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_DELETE_ERROR, "Failed to delete room"));
+        .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_DELETE_ERROR, "Failed to delete room"))
+        ;
     }
 
     /**
@@ -134,22 +135,7 @@ public class RoomServiceImpl implements RoomService {
         .flatMap(roomRepository::findById)
         .switchIfEmpty(Mono.error(new ChatException(ExceptionStatus.NOT_FOUND, "Room not found")))
         .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_FIND_ERROR, "Failed to find room"));
-    }
-
-    /**
-     * Find All Chatting Roo
-     * <p>MongoDB에서 모든 Room을 찾는다.</p>
-     * @return {@link Flux}&lt{@link RoomFluxModel}&gt(found models) or {@link Flux}&lt{@link ChatException}&gt(if error occurs)
-     * @since 2024-07-22
-     * @version 1.0
-     * @author JunHwei Lee(6whistle)
-     * @see QueryService#findAll()
-     */
-    @Override
-    public Flux<RoomFluxModel> findAll(Pageable pageable) {
-        return roomRepository.findAllBy(pageable)
-        .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_FIND_ERROR, "Failed to find rooms"));
-    }
+    }   
 
     /**
      * Count Chatting Room
@@ -169,7 +155,7 @@ public class RoomServiceImpl implements RoomService {
 
     /**
      * Find Chatting Room by Category
-     * <p>MongoDB에서 Room을 type에 따라 유동적으로 찾는다.</p>
+     * <p>MongoDB에서 Room을 필드에 따라 유동적으로 찾는다.</p>
      * @param type String
      * @param value String
      * @param pageable {@link Pageable}
@@ -179,14 +165,26 @@ public class RoomServiceImpl implements RoomService {
      * @author JunHwei Lee(6whistle)
      */
     @Override
-    public Flux<RoomFluxModel> findBy(String type, String value, Pageable pageable) {
-        return switch(type) {
-            case "title" -> roomRepository.findTypeEqualsValue(type, value, pageable);
-            case "roomCategories" -> roomRepository.findTypeHasValue(type, value.toUpperCase(), pageable);
-            case "adminIds" -> roomRepository.findTypeHasValue(type, value, pageable);
-            case "memberIds" -> roomRepository.findTypeHasValue(type, value, pageable);
-            default -> Flux.error(new ChatException(ExceptionStatus.BAD_REQUEST, "Invalid type"));
-        };
+    public Flux<RoomFluxModel> findBy(String roomId, String field, String value, Pageable pageable) {
+        return 
+        Mono.just(field)
+        .flatMapMany(f -> switch(field) {
+            case "all" -> roomRepository.findAllBy(pageable);
+            case "title" -> Mono.just(value)
+                .filter(i -> i != null && !i.isEmpty())
+                .flatMapMany(i -> roomRepository.findFieldEqualsValue(field, value, pageable));
+            case "roomCategories" -> Mono.just(value)
+                .filter(i -> i != null && !i.isEmpty())
+                .flatMapMany(i -> roomRepository.findFieldHasValue(field, value.toUpperCase(), pageable));
+            case "adminIds", "memberIds" -> Mono.just(value)
+                .filter(i -> i != null && !i.isEmpty())
+                .flatMapMany(i -> roomRepository.findFieldHasValue(field, value, pageable));
+            default -> Flux.error(new ChatException(ExceptionStatus.INVALID_INPUT, "Invalid field"));
+            }
+        )
+        .switchIfEmpty(Flux.error(new ChatException(ExceptionStatus.INVALID_INPUT)))
+        .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_FIND_ERROR, "Failed to find rooms"))
+        ;
     }
 
     /**

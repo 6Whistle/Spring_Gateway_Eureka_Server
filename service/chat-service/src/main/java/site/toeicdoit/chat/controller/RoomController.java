@@ -94,8 +94,8 @@ public class RoomController {
         log.info("Delete room : {}", dto.toString());
         return roomService.findById(dto.getId())
         .doOnNext(model -> roomService.delete(model.getId()).subscribe())
-        .flatMap(i -> Mono.just(
-                ResponseEntity.ok(Messenger.builder().message("Delete room successfully").state(Boolean.TRUE).data(roomService.toDTO(i)).build())
+        .flatMap(model -> Mono.just(
+                ResponseEntity.ok(Messenger.builder().message("Delete room successfully").state(Boolean.TRUE).data(roomService.toDTO(model)).build())
         ))
         ;
     }
@@ -116,36 +116,14 @@ public class RoomController {
     public Mono<ResponseEntity<Messenger>> findById(@RequestParam String id) {
         log.info("Find room by id : {}", id);
         return roomService.findById(id)
-        .flatMap(i -> Mono.just(
-            ResponseEntity.ok(Messenger.builder().message("Find room successfully").state(Boolean.TRUE).data(roomService.toDTO(i)).build())
-        ));
-    }
-
-    /**
-     * Get All Chatting Room
-     * <p>반환 값 중 state가 true이면 성공, false이면 실패.</p>
-     * <p>성공 시 data에는 조회된 모든 채팅방 정보가 담겨있음.</p>
-     * <p>REST API: <b>GET</b></p>
-     * <p>Endpoint: <b>/api/room/find-all</b></p>
-     * @return {@link Mono}&lt{@link ResponseEntity}&lt{@link Messenger}&gt&gt
-     * @since 2024-07-23
-     * @version 1.0
-     * @author JunHwei Lee(6whistle)
-     */
-    @GetMapping("/find-all")
-    public Mono<ResponseEntity<Messenger>> findAll(Pageable pageable) {
-        log.info("Find all rooms");
-        return roomService.findAll(pageable)
-        .flatMap(i -> Mono.just(roomService.toDTO(i)))
-        .collectList()
-        .flatMap(roomDTO -> Mono.just(
-            ResponseEntity.ok(Messenger.builder().message("Find all rooms successfully").state(Boolean.TRUE).data(roomDTO).build())
+        .flatMap(model -> Mono.just(
+            ResponseEntity.ok(Messenger.builder().message("Find room successfully").state(Boolean.TRUE).data(roomService.toDTO(model)).build())
         ));
     }
 
     /**
      * Get Chatting Room by Category
-     * <p>반환 값 중 state가 true이면 성공, false이면 실패.</p>
+     * <p>반환 값 중 count에는 조회된 채팅방 개수가 담겨있음.</p>
      * <p>성공 시 data에는 조회된 채팅방 정보가 담겨있음.</p>
      * <p>REST API: <b>GET</b></p>
      * <p>Endpoint: <b>/api/room/find-by</b></p>
@@ -157,15 +135,19 @@ public class RoomController {
      * @author JunHwei Lee(6whistle)
      */
     @GetMapping("/find-by")
-    public Mono<ResponseEntity<Messenger>> findBy(@RequestParam String type, @RequestParam String value, Pageable pageable) {
-        log.info("Find rooms by {} : {}", type, pageable);
-        return roomService.findBy(type, value, pageable)
-        .flatMap(i -> Mono.just(roomService.toDTO(i)))
+    public Mono<ResponseEntity<Messenger>> findBy(
+        @RequestParam(required = false) String roomId,
+        @RequestParam(required = true) String field, 
+        @RequestParam(required = false) String value, 
+        Pageable pageable
+    ) {
+        log.info("Find rooms by {}, {}, {}, {}", roomId, field, value, pageable);
+        return roomService.findBy(roomId, field, value, pageable)
+        .flatMap(models -> Mono.just(roomService.toDTO(models)))
         .collectList()
-        .flatMap(roomDTO -> Mono.just(
-            ResponseEntity.ok(Messenger.builder().message("Find rooms by " + type + " successfully").state(Boolean.TRUE).data(roomDTO).build())
+        .flatMap(roomDTOs -> Mono.just(
+            ResponseEntity.ok(Messenger.builder().message("Find rooms by " + field + " successfully").count(roomDTOs.size()).data(roomDTOs).build())
         ));
-        // return Mono.just(ResponseEntity.ok(new Messenger()));
     }
     
     /**

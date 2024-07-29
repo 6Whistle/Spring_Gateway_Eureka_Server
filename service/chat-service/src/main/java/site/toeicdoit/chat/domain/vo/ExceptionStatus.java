@@ -37,7 +37,8 @@ public enum ExceptionStatus {
     MONGODB_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "MongoDB Delete Error"),
 
     // KAFKA
-    KAFKA_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Kafka Send Error");
+    KAFKA_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Kafka Send Error"), 
+    KAFKA_RECEIVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Kafka Receive Error");
 
     private final HttpStatus status;
     private final String message;

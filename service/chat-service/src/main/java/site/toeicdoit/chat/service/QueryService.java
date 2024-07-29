@@ -16,6 +16,6 @@ import reactor.core.publisher.Mono;
  */
 public interface QueryService<Model, DTO> {
     Mono<Model> findById(String id);
-    Flux<Model> findAll(Pageable pageable);
+    Flux<Model> findBy(String id, String field, String value, Pageable pageable);
     Mono<Long> count();
 }

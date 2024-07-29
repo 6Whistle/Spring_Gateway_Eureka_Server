@@ -14,5 +14,5 @@ import reactor.core.publisher.Mono;
 public interface CommandService<Model, DTO> {
     Mono<Model> save(DTO dto);
     Mono<Model> update(DTO dto);
-    Mono<Boolean> delete(String id);
+    Mono<Model> delete(String id);
 }

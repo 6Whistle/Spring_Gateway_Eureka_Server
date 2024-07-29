@@ -1,8 +1,5 @@
 package site.toeicdoit.chat.service;
 
-import org.springframework.data.domain.Pageable;
-
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.chat.domain.dto.AccessRoomDTO;
 import site.toeicdoit.chat.domain.dto.RoomDTO;
@@ -39,19 +36,6 @@ public interface RoomService extends CommandService<RoomFluxModel, RoomDTO>, Que
         .updatedAt(model.getUpdatedAt())
         .build();
     }
-
-    /**
-     * Find Chatting Room by type and value
-     * <p>type에 따라 value를 검색하여 채팅방을 반환한다.</p>
-     * @param type String
-     * @param value String
-     * @param pageable {@link Pageable}
-     * @return {@link Flux}&lt{@link RoomFluxModel}&gt
-     * @since 2024-07-23
-     * @version 1.0
-     * @author JunHwei Lee(6whistle)
-     */
-    Flux<RoomFluxModel> findBy(String type, String value, Pageable pageable);
 
     /**
      * Enter Chatting Room

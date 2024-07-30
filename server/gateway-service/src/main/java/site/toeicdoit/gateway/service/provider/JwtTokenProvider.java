@@ -18,7 +18,6 @@ import site.toeicdoit.gateway.exception.GatewayException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveValueOperations;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -71,7 +70,7 @@ public class JwtTokenProvider{
         return extractClaim(jwt, i -> i.get("roles", List.class));
     }
 
-    public Mono<String> generateToken(UserDetails userDetails, boolean isRefreshToken){
+    public Mono<String> generateToken(PrincipalUserDetails userDetails, boolean isRefreshToken){
         return Mono.just(generateToken(Map.of(), userDetails, isRefreshToken))
                 .flatMap(token -> 
                     isRefreshToken 
@@ -80,12 +79,13 @@ public class JwtTokenProvider{
                 );
     }
 
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, boolean isRefreshToken){
+    private String generateToken(Map<String, Object> extraClaims, PrincipalUserDetails userDetails, boolean isRefreshToken){
         return Jwts.builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuer(issuer)
                 .claim("roles", userDetails.getAuthorities().stream().map(i -> i.getAuthority()).toList())
+                .claim("id", userDetails.getUser().getId())
                 .claim("type", isRefreshToken ? "refresh" : "access")
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now().plusSeconds(isRefreshToken ? refreshTokenExpired : accessTokenExpired)))

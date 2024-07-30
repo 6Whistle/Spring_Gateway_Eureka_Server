@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
 
             return LoginResultDto.builder()
                     .user(UserDto.builder()
+                            .id(newOauthSave.getId())
                             .email(newOauthSave.getEmail())
                             .roles(Stream.of(roleSave.getRole()).map(Role::getRole).toList())
                             .build())

@@ -50,6 +50,7 @@ public class PrincipalOauthUserService implements ReactiveOAuth2UserService<OAut
                 //             UserModel.builder()
                 //                 .email(oauth2UserDTO.email())
                 //                 .name(oauth2UserDTO.name())
+                //                 .id(1L)
                 //                 .roles(List.of(Role.ROLE_USER))
                 //             .build(),
                 //             attributes 

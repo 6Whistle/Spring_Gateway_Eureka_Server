@@ -47,3 +47,5 @@ config-service/*
 docker/*
 
 application.yml
+
+jenkins/jenkins/*

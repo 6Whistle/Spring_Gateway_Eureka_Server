@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 @Setter
 @Data
 @Builder
-public class ResultDto {
+public class ToeicCategoryDto {
 
     private Long id;
-    private String userAnser;
-    private String isCorrect;
-    private String timeElapsed;
-    private String score;
-    private String lsScore;
-    private String rcScore;
+    private String title;
+    private String sound;
+    private String script;
+    private String testType;
+
 
     private String createdAt;
     private String updatedAt;
+
 }

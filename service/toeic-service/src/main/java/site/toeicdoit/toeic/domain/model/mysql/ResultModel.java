@@ -2,15 +2,7 @@ package site.toeicdoit.toeic.domain.model.mysql;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,16 +22,16 @@ public class ResultModel extends BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userAnswer;
-    private boolean isCorrect;
+    private boolean isCorrect; //정답유무
+    private String timeElasped; //풀이시간
+    private String score; //점수
+    private String lcScore; //lc점수
+    private String rcScore; //rc점수
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserModel userId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "toeic_id")
-    private ToeicModel toeicId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private ToeicCategoryModel toeicCategoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")

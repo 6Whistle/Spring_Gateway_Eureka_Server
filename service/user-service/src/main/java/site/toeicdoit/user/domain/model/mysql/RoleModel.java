@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.toeicdoit.user.domain.vo.Role;
 
 @Entity
 @NoArgsConstructor

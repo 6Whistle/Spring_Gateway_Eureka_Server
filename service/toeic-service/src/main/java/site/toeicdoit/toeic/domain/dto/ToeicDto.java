@@ -14,13 +14,11 @@ public class ToeicDto {
 
     private Long id;
     private Long level;
+    private String part;
     private String question;
     private String answer;
     private String description;
     private String image;
-    private String sound;
-    private String script;
-    private String title;
     private boolean take;
 
     private String createdAt;

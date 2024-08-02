@@ -2,6 +2,7 @@ package site.toeicdoit.tx.service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.toeicdoit.tx.domain.vo.Messenger;
@@ -28,6 +29,13 @@ public class SubscribeServiceImpl implements SubscribeService {
             dto.setSubscribeState(false);
         }
 
+        if (dto.getEndDate() == null) {
+            throw new IllegalArgumentException("End date cannot be null");
+        }
+        if (dto.getCreatedAt() == null) {
+            throw new IllegalArgumentException("Creation date cannot be null");
+        }
+
 
 
         if (dto.getEndDate().isAfter(dto.getCreatedAt())) {
@@ -37,21 +45,24 @@ public class SubscribeServiceImpl implements SubscribeService {
             dto.setSubscribeState(false);
 
             return Messenger.builder()
-                    .message("FAILURE")
+                    .message("구독 종료일이 현재 날짜보다 이전입니다.")
+                    .state(Boolean.FALSE)
                     .build();
         }
 
         Long id = subscribeRepository.findIdByendDate(dto.getEndDate());
 
 
+
+
         return Messenger.builder()
-                .message("SUCCESS")
-                .subscribeId(id)
+                .state(Boolean.TRUE)
+                .data(id)
                 .build();
     }
 
     @Transactional
-    public Messenger check(UserModel userId) {
+    public Messenger existByUserId(Long userId) {
         List<SubscribeModel> subscriptions = subscribeRepository.findAllByUserId(userId);
         boolean hasTrueSubscribe = false;
 
@@ -70,11 +81,12 @@ public class SubscribeServiceImpl implements SubscribeService {
         // 하나라도 true인 경우 "SUCCESS" 메시지를 반환
         if (hasTrueSubscribe) {
             return Messenger.builder()
-                    .message("SUCCESS")
+                    .state(Boolean.TRUE)
                     .build();
         } else {
             return Messenger.builder()
-                    .message("FAILURE")
+                    .message("구독 정보가 없습니다.")
+                    .state(Boolean.FALSE)
                     .build();
         }
     }

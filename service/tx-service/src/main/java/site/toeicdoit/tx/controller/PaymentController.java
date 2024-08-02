@@ -35,7 +35,7 @@ public class PaymentController {
 
 
 
-    @PostMapping("/verifyIamport/{imp_uid}")
+    @PostMapping("/verify-import/{imp_uid}")
     public ResponseEntity<?> paymentByImpUid(@PathVariable("imp_uid") String imp_uid) throws IamportResponseException, IOException {
         log.info("imp_uid={}", imp_uid);
         IamportResponse<Payment> response = iamportClient.paymentByImpUid(imp_uid);
@@ -46,14 +46,14 @@ public class PaymentController {
         log.info("입력받은 정보: {}",dto);
         return ResponseEntity.ok(paymentService.save(dto));
     }
-    @GetMapping("/find")
-    public ResponseEntity<List<PaymentDto>> getPaymentByUserId(@RequestParam ("id") Long userId) throws SQLException {
-        return ResponseEntity.ok(paymentService.getPaymentByUserId(userId));
+    @GetMapping("/find-all-by-userId")
+    public ResponseEntity<Messenger> findAllByUserId(@RequestParam ("id") Long userId) throws SQLException {
+        return ResponseEntity.ok(Messenger.builder().message("FIND PAYMENT DTO SUCCESSFULLY").state(Boolean.TRUE).data(paymentService.findAllByUserId(userId)).build() );
     }
     @PostMapping("/refund")
-    public ResponseEntity<Messenger> refundPayment(@RequestBody PaymentDto dto) throws SQLException, IamportResponseException, IOException {
+    public ResponseEntity<Messenger> refund(@RequestBody PaymentDto dto) throws SQLException, IamportResponseException, IOException {
         log.info("입력받은 정보: {}",dto);
-        return ResponseEntity.ok(paymentService.refundPayment(dto));
+        return ResponseEntity.ok(paymentService.refund(dto));
     }
 
 }

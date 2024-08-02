@@ -13,9 +13,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 
 public class Messenger {
-    private String message;
     private int status;
-    private Object data;
     private String accessToken;
     private String refreshToken;
     private Long accessTokenExpired;
@@ -23,4 +21,13 @@ public class Messenger {
     private Long boardId;
     private Long paymentId;
     private Long subscribeId;
+
+    // String 메세지 전달
+    private String message;
+    // Boolean 값 전달
+    private Boolean state;
+    // Integer / Long 값 전달
+    private Long count;
+    // Single / List of DTO 전달
+    private Object data;
 }

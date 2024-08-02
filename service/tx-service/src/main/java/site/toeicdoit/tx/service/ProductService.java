@@ -16,5 +16,5 @@ public interface ProductService {
                 .build();
     }
 
-    Messenger payment(ProductDto dto);
+    Messenger save(ProductDto dto);
 }

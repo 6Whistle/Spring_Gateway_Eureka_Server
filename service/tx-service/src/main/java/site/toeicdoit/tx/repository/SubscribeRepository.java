@@ -18,5 +18,6 @@ public interface SubscribeRepository extends JpaRepository<SubscribeModel, Long>
     Long findIdByendDate(@Param("endDate") LocalDateTime endDate);
 
 
-    List<SubscribeModel> findAllByUserId(UserModel userId);
+    @Query("SELECT s FROM SubscribeModel s WHERE s.userId.id = :userId")
+    List<SubscribeModel> findAllByUserId(@Param("userId") Long userId);
 }

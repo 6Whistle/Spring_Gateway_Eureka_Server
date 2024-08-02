@@ -7,5 +7,5 @@ import site.toeicdoit.tx.domain.model.CalendarModel;
 import java.util.List;
 
 public interface CalendarDao {
-    List<CalendarModel> getCalendarByUserId(Long userId);
+    List<CalendarModel> findCalendarByUserId(Long userId);
 }

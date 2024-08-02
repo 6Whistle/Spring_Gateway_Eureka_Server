@@ -37,7 +37,7 @@ public class PaymentModel extends BaseModel {
     @JoinColumn(name = "product_id")
     private ProductModel productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
     @JoinColumn(name = "subscribe_id")
     private SubscribeModel subscribeId;
 

@@ -16,7 +16,7 @@ public class CalendarDaoImpl implements CalendarDao {
 
 
     @Override
-    public List<CalendarModel> getCalendarByUserId(Long userId) {
+    public List<CalendarModel> findCalendarByUserId(Long userId) {
         QCalendarModel calendar = QCalendarModel.calendarModel;
 
         return queryFactory.selectFrom(calendar)

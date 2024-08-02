@@ -21,7 +21,7 @@ public class PaymentDaoImpl implements PaymentDao {
 
 
     @Override
-    public List<PaymentDto> getPaymentByUserId(Long userId) {
+    public List<PaymentDto> findAllByUserId(Long userId) {
         return queryFactory.select(new QPaymentDto(
                         payment.id,
                         payment.amount,

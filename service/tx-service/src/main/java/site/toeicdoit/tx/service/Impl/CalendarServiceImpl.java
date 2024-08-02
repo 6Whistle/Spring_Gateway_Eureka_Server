@@ -59,12 +59,13 @@ public class CalendarServiceImpl implements CalendarService {
             log.info("Duplicate calendar event found. Not saving the event.");
             return Messenger.builder()
                         .message("FAILURE: Already exists")
+                        .state(Boolean.FALSE)
                         .build();
         }
 
         repo.save(dtoToEntity(dto));
         return Messenger.builder()
-                .message("SUCCESS")
+                .state(Boolean.TRUE)
                 .build();
     }
 
@@ -94,7 +95,7 @@ public class CalendarServiceImpl implements CalendarService {
         boolean allSuccess = savedModels.size() == calendarDto.size();
 
         return Messenger.builder()
-                .message(allSuccess ? "SUCCESS" : "FAIL")
+                .state(allSuccess ? Boolean.TRUE : Boolean.FALSE)
                 .build();
     }
 
@@ -136,7 +137,7 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
-    public List<CalendarDto> getCalendarByUserId(Long userId) {
-        return repo.getCalendarByUserId(userId).stream().map(i -> entityToDto(i)).peek(System.out::println).toList();
+    public List<CalendarDto> findAllByUserId(Long userId) {
+        return repo.findCalendarByUserId(userId).stream().map(i -> entityToDto(i)).peek(System.out::println).toList();
     }
 }

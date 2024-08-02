@@ -29,9 +29,9 @@ public class SubscribeController {
         return ResponseEntity.ok(subscribeService.save(dto));
     }
 
-    @PostMapping("/check")
-    public ResponseEntity<Messenger> check(@RequestBody UserModel userId)  {
+    @GetMapping("/exist-by-userId")
+    public ResponseEntity<Messenger> existByUserId(@RequestParam Long userId)  {
         log.info("입력받은 정보: {}",userId);
-        return ResponseEntity.ok(subscribeService.check(userId));
+        return ResponseEntity.ok(subscribeService.existByUserId(userId));
     }
 }

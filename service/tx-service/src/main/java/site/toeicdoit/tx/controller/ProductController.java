@@ -27,7 +27,7 @@ public class ProductController {
     @PostMapping("/payment")
     public ResponseEntity<Messenger> save(@RequestBody ProductDto dto) throws SQLException {
         log.info("입력받은 정보: {}",dto);
-        return ResponseEntity.ok(productService.payment(dto));
+        return ResponseEntity.ok(productService.save(dto));
     }
 
 }

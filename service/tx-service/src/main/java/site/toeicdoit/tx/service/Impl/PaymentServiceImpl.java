@@ -47,20 +47,20 @@ public class PaymentServiceImpl implements PaymentService {
          log.info(paymentId.toString());
 
         return Messenger.builder()
-                .message("SUCCESS")
-                .paymentId(paymentId)
+                .state(Boolean.TRUE)
+                .data(paymentId)
                 .build();
     }
 
     @Override
-    public List<PaymentDto> getPaymentByUserId(Long userId) {
+    public List<PaymentDto> findAllByUserId(Long userId) {
 
-        return paymentRepository.getPaymentByUserId(userId).stream().toList();
+        return paymentRepository.findAllByUserId(userId).stream().toList();
 
     }
 
     @Override
-    public Messenger refundPayment(PaymentDto dto) throws IamportResponseException, IOException {
+    public Messenger refund(PaymentDto dto) throws IamportResponseException, IOException {
         log.info(dto.getPaymentUid());
         IamportResponse<Payment> response = iamportClient.paymentByImpUid(dto.getPaymentUid());
         //cancelData 생성
@@ -73,7 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
         UserModel user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.save(user);
         return Messenger.builder()
-                .message("SUCCESS")
+                .state(Boolean.TRUE)
                 .build();
     }
 

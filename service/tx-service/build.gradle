@@ -7,12 +7,6 @@ plugins {
 group = 'site.toeicdoit'
 version = '0.0.1-SNAPSHOT'
 
-jar.enabled = false
-
-bootJar {
-	enabled = true
-}
-
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
@@ -31,7 +25,7 @@ repositories {
 }
 
 jar.enabled = false
-
+bootJar.enabled = true
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
@@ -79,6 +73,7 @@ dependencies {
 
 	//Config
 	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-config'
+
 }
 
 ext {

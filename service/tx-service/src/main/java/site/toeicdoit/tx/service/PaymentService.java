@@ -37,7 +37,7 @@ public interface PaymentService {
     Messenger save(PaymentDto dto);
 
 
-    List<PaymentDto> getPaymentByUserId(Long userId);
+    List<PaymentDto> findAllByUserId(Long userId);
 
-    Messenger refundPayment(PaymentDto dto) throws IamportResponseException, IOException;
+    Messenger refund(PaymentDto dto) throws IamportResponseException, IOException;
 }

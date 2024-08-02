@@ -66,13 +66,21 @@ public class BoardController {
     }
 
     @GetMapping("/find-all-by-userId")
-    public ResponseEntity<List<BoardDto>> findAllByUserId(@RequestParam("id") Long id) {
-        return ResponseEntity.ok(service.findAllByUserId(id));
+    public ResponseEntity<Page<BoardDto>> findAllByUserId(@RequestParam("id") Long id, Pageable pageable) {
+        log.info(">>> findAllByUserId 진입 : {}, {}", id, pageable);
+        return ResponseEntity.ok(service.findAllByUserId(id, pageable));
     }
 
     @GetMapping("/find-all-by-email")
     public ResponseEntity<List<BoardDto>> finAllByEmail(@RequestParam("email") String email) {
         return ResponseEntity.ok(service.findAllByEmail(email));
+    }
+
+    @GetMapping("/find-all-by-type-title")
+    public ResponseEntity<Page<BoardDto>> findAllByTypeAndTitle(@RequestParam("type") String type,
+                                                                @RequestParam("title") String title,
+                                                                Pageable pageable) {
+        return ResponseEntity.ok(service.findAllByTypeAndTitle(type, title, pageable));
     }
 
 

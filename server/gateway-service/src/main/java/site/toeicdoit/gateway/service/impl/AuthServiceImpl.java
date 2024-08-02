@@ -13,8 +13,8 @@ import site.toeicdoit.gateway.domain.dto.LoginDTO;
 import site.toeicdoit.gateway.domain.model.PrincipalUserDetails;
 import site.toeicdoit.gateway.domain.vo.ExceptionStatus;
 import site.toeicdoit.gateway.exception.GatewayException;
+import site.toeicdoit.gateway.provider.JwtTokenProvider;
 import site.toeicdoit.gateway.service.AuthService;
-import site.toeicdoit.gateway.service.provider.JwtTokenProvider;
 
 @Slf4j
 @Service

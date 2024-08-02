@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.gateway.domain.dto.MessengerDTO;
 import site.toeicdoit.gateway.domain.model.PrincipalUserDetails;
-import site.toeicdoit.gateway.service.provider.JwtTokenProvider;
+import site.toeicdoit.gateway.provider.JwtTokenProvider;
 
 @Slf4j
 @Component

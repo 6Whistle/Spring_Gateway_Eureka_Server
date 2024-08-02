@@ -1,6 +1,6 @@
 package site.toeicdoit.user.domain.model.mongo;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;

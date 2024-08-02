@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import site.toeicdoit.gateway.domain.vo.ExceptionStatus;
 import site.toeicdoit.gateway.domain.vo.Role;
 import site.toeicdoit.gateway.exception.GatewayException;
-import site.toeicdoit.gateway.service.provider.JwtTokenProvider;
+import site.toeicdoit.gateway.provider.JwtTokenProvider;
 
 @Slf4j
 @Component

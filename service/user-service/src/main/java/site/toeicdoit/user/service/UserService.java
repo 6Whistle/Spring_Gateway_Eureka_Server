@@ -13,7 +13,6 @@ public interface UserService extends CommandService<UserDto>, QueryService<UserD
 
     default UserModel dtoToEntity(UserDto dto){
         return UserModel.builder()
-                .id(dto.getId())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
                 .profile(dto.getProfile())
@@ -42,10 +41,11 @@ public interface UserService extends CommandService<UserDto>, QueryService<UserD
                 .build();
     }
 
-    LoginResultDto oauthJoin(OAuth2UserDto dto);
+    LoginResultDto oauthJoinOrLogin(OAuth2UserDto dto, String registration);
     LoginResultDto login(UserDto dto);
     Optional<UserDto> findByEmail(String email);
 
     Messenger modifyByPassword(UserDto dto);
     Messenger modifyByKeyword(UserDto dto);
+    Messenger modifyByNameAndPhone(UserDto dto);
 }

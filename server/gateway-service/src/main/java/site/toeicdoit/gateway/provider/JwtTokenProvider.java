@@ -1,4 +1,4 @@
-package site.toeicdoit.gateway.service.provider;
+package site.toeicdoit.gateway.provider;
 
 
 import io.jsonwebtoken.Claims;
@@ -70,6 +70,10 @@ public class JwtTokenProvider{
         return extractClaim(jwt, i -> i.get("roles", List.class));
     }
 
+    String extractId(String jwt){
+        return extractClaim(jwt, i -> i.get("id", String.class));
+    }
+
     public Mono<String> generateToken(PrincipalUserDetails userDetails, boolean isRefreshToken){
         return Mono.just(generateToken(Map.of(), userDetails, isRefreshToken))
                 .flatMap(token -> 
@@ -132,7 +136,7 @@ public class JwtTokenProvider{
     }
 
     public PrincipalUserDetails extractPrincipalUserDetails(String jwt){
-        return new PrincipalUserDetails(UserModel.builder().email(extractEmail(jwt)).roles(extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList()).build());
+        return new PrincipalUserDetails(UserModel.builder().email(extractEmail(jwt)).id(extractId(jwt)).roles(extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList()).build());
     }
 
     public Mono<Boolean> removeTokenInRedis(String email){

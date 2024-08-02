@@ -1,16 +1,15 @@
 package site.toeicdoit.user.domain.dto;
 
-
 import lombok.*;
-import org.springframework.stereotype.Component;
 
-@Component
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
 public class ReplyDto {
     private Long id;
     private String content;
-    private String writer;
+    private Long userId;
+    private String writerName;
+    private Long boardId;
 }

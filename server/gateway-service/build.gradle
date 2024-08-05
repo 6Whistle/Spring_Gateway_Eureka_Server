@@ -79,7 +79,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// OAuth
-	implementation 'org.springframework.security:spring-security-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'

@@ -53,7 +53,6 @@ public class WebSecurityConfig {
                 authorize.anyExchange().permitAll()
             )
             .cors(i -> i.configurationSource(configurationSource()))
-            .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             .httpBasic(i -> i.disable())
             .csrf(i -> i.disable())
             .formLogin(i -> i.disable())
@@ -61,6 +60,7 @@ public class WebSecurityConfig {
                 .authorizationRequestResolver(serverOAuth2AuthorizationRequestResolver())
                 .authenticationSuccessHandler(customAuthenticationSuccessHandler)
                 .authenticationFailureHandler(customAuthenicationFailureHandler)
+                .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             )
             .build();
     }

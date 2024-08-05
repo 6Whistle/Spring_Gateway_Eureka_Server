@@ -70,8 +70,8 @@ public class JwtTokenProvider{
         return extractClaim(jwt, i -> i.get("roles", List.class));
     }
 
-    String extractId(String jwt){
-        return extractClaim(jwt, i -> i.get("id", String.class));
+    Long extractId(String jwt){
+        return extractClaim(jwt, i -> i.get("id", Long.class));
     }
 
     public Mono<String> generateToken(PrincipalUserDetails userDetails, boolean isRefreshToken){

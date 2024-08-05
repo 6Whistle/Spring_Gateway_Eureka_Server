@@ -78,6 +78,7 @@ public class UserServiceImpl implements UserService {
                                 .id(existOauthUpdate.getId())
                                 .email(existOauthUpdate.getEmail())
                                 .roles(existOauthUpdate.getRoleIds().stream().map(i -> Role.getRole(i.getRole())).toList())
+                                .registration(registration)
                                 .build())
                         .build();
             } else {
@@ -90,6 +91,7 @@ public class UserServiceImpl implements UserService {
                                 .id(saveUser.getId())
                                 .email(saveUser.getEmail())
                                 .roles(Stream.of(roleSave.getRole()).map(Role::getRole).toList())
+                                .registration(registration)
                                 .build())
                         .build();
             }
@@ -111,6 +113,7 @@ public class UserServiceImpl implements UserService {
                                 .id(existEmail.getId())
                                 .email(existEmail.getEmail())
                                 .roles(existEmail.getRoleIds().stream().map(i -> Role.getRole(i.getRole())).toList())
+                                .registration(existEmail.getRegistration())
                                 .build())
                         .build() : null; // 비번 틀릴 경우 에러 처리 필요
     }

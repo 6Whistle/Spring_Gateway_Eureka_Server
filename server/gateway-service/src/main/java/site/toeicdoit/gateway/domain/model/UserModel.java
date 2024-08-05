@@ -16,9 +16,9 @@ import site.toeicdoit.gateway.domain.vo.Role;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserModel {
-    private String id;
+    private Long id;
     private String email;
     private String name;
     private List<Role> roles;
-    private Registration registration;
+    private String registration;
 }

@@ -10,10 +10,12 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class PrincipalUserDetails implements UserDetails, OAuth2User {
     private UserModel user;
@@ -30,7 +32,7 @@ public class PrincipalUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getName() {
-        return attributes.get(user.getRegistration().name()).toString();
+        return attributes.get(user.getRegistration().toUpperCase()).toString();
     }
 
     @Override

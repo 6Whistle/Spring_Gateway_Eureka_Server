@@ -1,7 +1,5 @@
 package site.toeicdoit.gateway.service.impl;
 
-import java.util.List;
-
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.userinfo.DefaultReactiveOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -12,13 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.gateway.domain.model.OAuth2UserDTO;
 import site.toeicdoit.gateway.domain.model.PrincipalUserDetails;
-import site.toeicdoit.gateway.domain.model.UserModel;
 import site.toeicdoit.gateway.domain.vo.Registration;
-import site.toeicdoit.gateway.domain.vo.Role;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PrincipalOauthUserService implements ReactiveOAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -37,6 +35,7 @@ public class PrincipalOauthUserService implements ReactiveOAuth2UserService<OAut
             .flatMap(clientId -> Mono.just(Registration.valueOf(clientId.toUpperCase())))
             .flatMap(registration -> 
                 Mono.just(OAuth2UserDTO.of(registration, attributes))
+                .log()
                 .flatMap(oauth2UserDTO -> 
                     webClient.post()
                     .uri("lb://user-service/auth/oauth2/" + registration.name().toLowerCase())
@@ -45,18 +44,6 @@ public class PrincipalOauthUserService implements ReactiveOAuth2UserService<OAut
                     .retrieve()
                     .bodyToMono(PrincipalUserDetails.class)
                 )
-                // .flatMap(oauth2UserDTO -> 
-                //     Mono.just(new PrincipalUserDetails(
-                //             UserModel.builder()
-                //                 .email(oauth2UserDTO.email())
-                //                 .name(oauth2UserDTO.name())
-                //                 .id(1L)
-                //                 .roles(List.of(Role.ROLE_USER))
-                //             .build(),
-                //             attributes 
-                //         )
-                //     )
-                // )
             )
             .onErrorResume(e -> Mono.error(new OAuth2AuthenticationException(e.getMessage())))
         )

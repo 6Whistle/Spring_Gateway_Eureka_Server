@@ -34,7 +34,7 @@ public class AuthController {
     public ResponseEntity<LoginResultDto> oauthJoinOrLogin(@RequestBody OAuth2UserDto dto, @PathVariable("registration") String registration) {
         log.info(">>> oauthJoin con 진입: {}, {}", dto, registration);
 
-        return ResponseEntity.ok(service.oauthJoinOrLogin(dto, registration));
+        return ResponseEntity.ok(service.oauthJoinOrLogin(dto, registration.toUpperCase()));
     }
 
     @GetMapping("/exist-by-email")

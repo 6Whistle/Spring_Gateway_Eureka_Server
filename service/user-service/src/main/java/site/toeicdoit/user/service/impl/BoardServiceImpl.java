@@ -1,5 +1,6 @@
 package site.toeicdoit.user.service.impl;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
@@ -48,7 +49,6 @@ public class BoardServiceImpl implements BoardService {
         } else {
             return Messenger.builder().message("FAILURE").build();
         }
-
     }
 
     @Override
@@ -69,9 +69,10 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Boolean existByEmail(String email) {
-        return queryFactory.selectFrom(qBoard).where(qBoard.userId.email.eq(email)).fetchAll() != null;
+        return queryFactory.selectFrom(qBoard)
+                .where(qBoard.userId.email.eq(email))
+                .fetchAll() != null;
     }
-
 
     @Transactional
     @Override
@@ -94,71 +95,51 @@ public class BoardServiceImpl implements BoardService {
         return Messenger.builder().count(boardRepository.count()).build();
     }
 
-
     @Override
-    public Page<BoardDto> findAllByTypes(String type, Pageable pageable) {
-        log.info(">>> board findByTypes 진입 : {}", type);
-        List<BoardDto> content = queryFactory.selectFrom(qBoard)
-                .where(qBoard.type.eq(type))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(qBoard.id.desc())
-                .fetch()
-                .stream().map(this::entityToDto).toList();
-
-        JPAQuery<Long> countQuery = queryFactory.select(qBoard.count())
-                .from(qBoard)
-                .where(qBoard.type.eq(type));
-
-        log.info(">>> countQuery : {}", countQuery);
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
-    }
-
-
-    @Override
-    public Page<BoardDto> findAllByUserId(Long id, Pageable pageable) {
-        log.info(">>> board findAllByUserId 진입 : {}", id);
-        List<BoardDto> content = queryFactory.selectFrom(qBoard)
-                .where(qBoard.userId.id.eq(id))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(qBoard.id.desc())
-                .fetch()
-                .stream().map(this::entityToDto).toList();
-        log.info("findAllByUserId 결과 : {}", content);
-
-        JPAQuery<Long> countQuery = queryFactory.select(qBoard.count())
-                .from(qBoard)
-                .where(qBoard.userId.id.eq(id));
-
-        log.info(">>> countQuery : {}", countQuery);
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
-    }
-
-    @Override
-    public List<BoardDto> findAllByEmail(String email) {
-        log.info(">>> board impl findAllByEmail 진입 : {}", email);
-
-        return existByEmail(email) ?
-                queryFactory.selectFrom(qBoard)
-                        .where(qBoard.userId.email.eq(email))
-                        .fetch().stream().map(this::entityToDto).toList()
-                : null;
-    }
-
-    @Override
-    public Page<BoardDto> findAllByTypeAndTitle(String type, String title, Pageable pageable) {
+    @Transactional
+    public Page<BoardDto> findBy(String title, String type, String category, Long userId, Pageable pageable){
+        log.info("findByTest impl 진입 : {}, {}, {}, {}", title, type, category, userId);
         var board = queryFactory.selectFrom(qBoard)
-                .where(qBoard.type.eq(type).and(qBoard.title.contains(title)))
+                .where(eqTitle(title), eqType(type), eqCategory(category), eqUserId(userId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(qBoard.id.desc())
                 .fetch().stream().map(this::entityToDto).toList();
 
-        log.info("JPAQuery<BoardModel> 결과 : {}", board);
-
         JPAQuery<Long> countQuery = queryFactory.select(qBoard.count())
                 .from(qBoard)
-                .where(qBoard.type.eq(type).and(qBoard.title.contains(title)));
+                .where(eqTitle(title), eqType(type), eqCategory(category), eqUserId(userId));
 
         return PageableExecutionUtils.getPage(board, pageable, countQuery::fetchOne);
     }
+
+    private BooleanExpression eqTitle(String title) {
+        if (title == null) {
+            return null;
+        }
+        return qBoard.title.contains(title);
+    }
+
+    private BooleanExpression eqType(String type) {
+        if (type == null) {
+            return null;
+        }
+        return qBoard.type.eq(type);
+    }
+
+    private BooleanExpression eqCategory(String category) {
+        if (category == null) {
+            return null;
+        }
+        return qBoard.category.eq(category);
+    }
+
+    private BooleanExpression eqUserId(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        return qBoard.userId.id.eq(userId);
+    }
+
 
 }

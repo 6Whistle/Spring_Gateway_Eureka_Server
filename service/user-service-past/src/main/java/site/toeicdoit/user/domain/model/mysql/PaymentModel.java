@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import site.toeicdoit.user.domain.vo.PaymentStatus;
 
-
 import java.time.LocalDateTime;
 
 @Entity

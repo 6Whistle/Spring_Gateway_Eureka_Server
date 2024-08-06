@@ -25,7 +25,7 @@ public class CalendarModel extends BaseModel {
     private LocalDateTime endTime;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserModel userId;
 }

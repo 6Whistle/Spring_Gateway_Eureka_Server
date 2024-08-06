@@ -20,7 +20,7 @@ public class BoardDto {
     private String type;
     private String category;
     private Long userId;
-    private List<ReplyModel> replyIds;
+    private List<?> replyIds;
 
 
     private String writerName;

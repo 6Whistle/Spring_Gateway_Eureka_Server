@@ -52,8 +52,8 @@ public class UserModel extends BaseModel{
     @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY)
     private List<SubscribeModel> subscribeIds;
 
-    @OneToOne(mappedBy = "userId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private CalendarModel calendarId;
+    @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CalendarModel> calendarIds;
 
     
 }

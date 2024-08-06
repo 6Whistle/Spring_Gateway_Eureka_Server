@@ -37,5 +37,9 @@ out/
 .vscode/
 
 ### Security ###
+<<<<<<< HEAD
 .env
 src/main/generated
+=======
+.env
+>>>>>>> a23585f446517e860375eec3afc0072f9f886239

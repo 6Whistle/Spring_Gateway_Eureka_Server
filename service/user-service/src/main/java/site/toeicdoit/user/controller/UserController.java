@@ -8,6 +8,7 @@ import site.toeicdoit.user.domain.dto.UserDto;
 import site.toeicdoit.user.domain.vo.Messenger;
 import site.toeicdoit.user.domain.vo.PageRequestVo;
 import site.toeicdoit.user.service.UserService;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -43,14 +44,11 @@ public class UserController {
     }
 
     @PutMapping("/modify-by-password")
-    public ResponseEntity<Messenger> modifyByPassword(@RequestBody UserDto dto) {
-        log.info(">>> modifyByPassword con 정보 : {} ", dto);
-        return ResponseEntity.ok(service.modifyByPassword(dto));
-    }
-
-    @PutMapping("/modify-by-keyword")
-    public ResponseEntity<Messenger> modifyByKeyword(@RequestBody UserDto dto) {
-        return ResponseEntity.ok(service.modifyByKeyword(dto));
+    public ResponseEntity<Messenger> modifyByPassword(@RequestParam("id") Long id,
+                                                      @RequestParam("oldPassword") String oldPassword,
+                                                      @RequestParam("newPassword") String newPassword) {
+        log.info(">>> modifyByPassword con 진입 : {}, {}, {} ", id, oldPassword, newPassword);
+        return ResponseEntity.ok(service.modifyByPassword(id, oldPassword, newPassword));
     }
 
     @DeleteMapping("/delete")

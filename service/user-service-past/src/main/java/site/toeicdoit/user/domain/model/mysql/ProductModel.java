@@ -3,7 +3,6 @@ package site.toeicdoit.user.domain.model.mysql;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 import java.util.List;
 
 @Entity

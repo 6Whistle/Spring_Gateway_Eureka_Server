@@ -25,6 +25,7 @@ public interface ReplyService extends CommandService<ReplyDto> {
                 .userId(model.getUserId().getId())
                 .boardId(model.getBoardId().getId())
                 .build();
+
     }
 
     List<ReplyDto> findAllByBoardId(Long boardId);

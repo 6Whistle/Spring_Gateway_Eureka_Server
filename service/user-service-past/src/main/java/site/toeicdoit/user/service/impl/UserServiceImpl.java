@@ -16,7 +16,6 @@ import site.toeicdoit.user.domain.vo.MessageStatus;
 import site.toeicdoit.user.domain.vo.Messenger;
 import site.toeicdoit.user.domain.vo.Registration;
 import site.toeicdoit.user.domain.vo.Role;
-import site.toeicdoit.user.handler.AlreadyExistElementException;
 import site.toeicdoit.user.repository.mysql.CalendarRepository;
 import site.toeicdoit.user.repository.mysql.RoleRepository;
 import site.toeicdoit.user.service.UserService;
@@ -57,40 +56,47 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LoginResultDto oauthJoin(OAuth2UserDto dto) {
+    public LoginResultDto oauthJoinOrLogin(OAuth2UserDto dto, String registration) {
         log.info(">>> oauthJoin Impl 진입: {}", dto);
-        UserModel oauthUser = UserModel.builder()
-                .email(dto.email())
-                .name(dto.name())
-                .oauthId(dto.id())
-                .profile(dto.profile())
-                .registration(Registration.GOOGLE.name())
-                .build();
-        if (userRepository.existsByEmail(oauthUser.getEmail())) {
-            UserModel existOauthUpdate = userRepository.findByEmail(dto.email())
-                    .stream()
-                    .map(i -> userRepository.save(oauthUser))
-                    .findFirst()
-                    .get();
-            return LoginResultDto.builder()
-                    .user(UserDto.builder()
-                            .email(existOauthUpdate.getEmail())
-                            .roles(existOauthUpdate.getRoleIds().stream().map(i -> Role.getRole(i.getRole())).toList())
-                            .build())
-                    .build();
+        UserModel user = userRepository.findByEmail(dto.email())
+                .stream()
+                .peek(i -> i.setName(dto.name()))
+                .peek(i -> i.setProfile(dto.profile()))
+                .findAny()
+                .orElseGet(() -> UserModel.builder()
+                        .email(dto.email())
+                        .name(dto.name())
+                        .profile(dto.profile())
+                        .oauthId(dto.id())
+                        .registration(registration)
+                        .build());
+        if (user.getRegistration().equals(Registration.GOOGLE.name())) {
+            if (existByEmail(dto.email())) {
+                var existOauthUpdate = userRepository.save(user);
+                return LoginResultDto.builder()
+                        .user(UserDto.builder()
+                                .id(existOauthUpdate.getId())
+                                .email(existOauthUpdate.getEmail())
+                                .roles(existOauthUpdate.getRoleIds().stream().map(i -> Role.getRole(i.getRole())).toList())
+                                .registration(registration)
+                                .build())
+                        .build();
+            } else {
+                var saveUser = userRepository.save(user);
+                var roleSave = roleRepository.save(RoleModel.builder().role(0).userId(saveUser).build());
+                var calendarSave = calendarRepository.save(CalendarModel.builder().userId(roleSave.getUserId()).build());
+
+                return LoginResultDto.builder()
+                        .user(UserDto.builder()
+                                .id(saveUser.getId())
+                                .email(saveUser.getEmail())
+                                .roles(Stream.of(roleSave.getRole()).map(Role::getRole).toList())
+                                .registration(registration)
+                                .build())
+                        .build();
+            }
         } else {
-            var newOauthSave = userRepository.save(oauthUser);
-            var roleSave = roleRepository.save(RoleModel.builder().role(0).userId(newOauthSave).build());
-            var calendarSave = calendarRepository.save(CalendarModel.builder().userId(newOauthSave).build());
-
-
-            return LoginResultDto.builder()
-                    .user(UserDto.builder()
-                            .id(newOauthSave.getId())
-                            .email(newOauthSave.getEmail())
-                            .roles(Stream.of(roleSave.getRole()).map(Role::getRole).toList())
-                            .build())
-                    .build();
+            return null;
         }
     }
 
@@ -104,8 +110,10 @@ public class UserServiceImpl implements UserService {
         return passwordEncoder.matches(dto.getPassword(), existEmail.getPassword()) ?
                 LoginResultDto.builder()
                         .user(UserDto.builder()
+                                .id(existEmail.getId())
                                 .email(existEmail.getEmail())
                                 .roles(existEmail.getRoleIds().stream().map(i -> Role.getRole(i.getRole())).toList())
+                                .registration(existEmail.getRegistration())
                                 .build())
                         .build() : null; // 비번 틀릴 경우 에러 처리 필요
     }
@@ -163,8 +171,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Messenger modify(UserDto dto) {
         log.info(">>> user modify Impl 진입: {}", dto);
-        var updateUser = userRepository.findByEmail(dto.getEmail())
-                .stream().findFirst().map(i -> userRepository.save(dtoToEntity(dto)));
+        var updateUser = queryFactory.update(qUser)
+                .set(qUser.name, dto.getName())
+                .set(qUser.email, dto.getEmail())
+                .set(qUser.profile, dto.getProfile())
+                .where(qUser.id.eq(dto.getId()))
+                .execute();
+
+        log.info(">>> user modify Impl 결과 : {}", updateUser);
 
         return Messenger.builder()
                 .message(MessageStatus.SUCCESS.name())
@@ -177,7 +191,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(dto.getEmail())) {
             var updateUser = userRepository.findByEmail(dto.getEmail()).get();
             if (passwordEncoder.matches(dto.getPassword(), updateUser.getPassword())) {
-                queryFactory.update(qUser).set(qUser.password, passwordEncoder.encode(dto.getNewPassword())).where(qUser.id.eq(updateUser.getId())).execute();
+                queryFactory.update(qUser)
+                        .set(qUser.password, passwordEncoder.encode(dto.getNewPassword()))
+                        .where(qUser.id.eq(updateUser.getId()))
+                        .execute();
                 return Messenger.builder().message(MessageStatus.SUCCESS.name()).build();
             } else {
                 return Messenger.builder().message("이전 비밀번호와 다릅니다.").build();
@@ -193,23 +210,50 @@ public class UserServiceImpl implements UserService {
         StringPath updateSet = null;
 
         switch (dto.getUpdateKeyword()) {
-            case "email" : updateSet = qUser.email; break;
-            case "profile" : updateSet = qUser.profile; break;
-            case "phone" : updateSet = qUser.phone; break;
-            case "name" : updateSet = qUser.name; break;
-            default: break;
+            case "email":
+                updateSet = qUser.email;
+                break;
+            case "profile":
+                updateSet = qUser.profile;
+                break;
+            case "phone":
+                updateSet = qUser.phone;
+                break;
+            case "name":
+                updateSet = qUser.name;
+                break;
+            default:
+                break;
         }
 
-        if (updateSet != null){
+        if (updateSet != null) {
             if (userRepository.existsByEmail(dto.getEmail())) {
                 var updateUser = userRepository.findByEmail(dto.getEmail()).get();
                 queryFactory.update(qUser).set(updateSet, dto.getUpdateInfo()).where(qUser.id.eq(updateUser.getId())).execute();
                 return Messenger.builder().message(MessageStatus.SUCCESS.name()).build();
             } else {
-                return Messenger.builder().message("email 정보가 존재하지 않습니다.").build();
+                return Messenger.builder().message("email 정보가 존재하지 않습니다람쥐 히히").build();
             }
         } else {
             return Messenger.builder().message("Keyword를 잘못 입력했습니다.").build();
         }
     }
+
+    @Transactional
+    @Override
+    public Messenger modifyByNameAndPhone(UserDto dto) {
+        log.info(">>> user modifyByNameAndPhone Impl 진입: {}", dto);
+        long user = queryFactory.update(qUser)
+                .set(qUser.name, dto.getName())
+                .set(qUser.phone, dto.getPhone())
+                .where(qUser.id.eq(dto.getId()))
+                .execute();
+
+        log.info(">>> user modifyByNameAndPhone Impl 결과 : {}", user);
+
+        return Messenger.builder()
+                .message(MessageStatus.SUCCESS.name())
+                .build();
+    }
+
 }

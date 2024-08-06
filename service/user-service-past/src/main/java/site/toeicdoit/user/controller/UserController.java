@@ -50,12 +50,8 @@ public class UserController {
 
     @PutMapping("/modify-by-keyword")
     public ResponseEntity<Messenger> modifyByKeyword(@RequestBody UserDto dto) {
-        log.info(">>> modifyByKeyword con 정보 : {}", dto);
-
         return ResponseEntity.ok(service.modifyByKeyword(dto));
     }
-
-
 
     @DeleteMapping("/delete")
     public ResponseEntity<Messenger> deleteById(@RequestParam("id") Long id) {
@@ -67,10 +63,16 @@ public class UserController {
         return ResponseEntity.ok(service.existById(id));
     }
 
-
     @GetMapping("/count-all")
     public ResponseEntity<Messenger> countAll() {
         return ResponseEntity.ok(service.countAll());
     }
+
+    @PutMapping("/modify-by-name-phone")
+    public ResponseEntity<Messenger> modifyByNameAndPhone(@RequestBody UserDto dto) {
+        log.info(">>> modifyByNameAndPhone con 정보 : {}", dto);
+        return ResponseEntity.ok(service.modifyByNameAndPhone(dto));
+    }
+
 
 }

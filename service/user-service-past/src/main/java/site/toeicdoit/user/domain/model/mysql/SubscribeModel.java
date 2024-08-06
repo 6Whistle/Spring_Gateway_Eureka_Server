@@ -4,7 +4,6 @@ package site.toeicdoit.user.domain.model.mysql;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 

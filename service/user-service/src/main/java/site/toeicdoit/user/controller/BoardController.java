@@ -59,29 +59,14 @@ public class BoardController {
         return ResponseEntity.ok(service.findAll());
     }
 
-    @GetMapping("/find-all-by-types")
-    public ResponseEntity<Page<BoardDto>> findAllByTypes(@RequestParam("type") String type, Pageable pageable) {
-        log.info(">>> findByType 진입 : {}, {}", type, pageable);
-        return ResponseEntity.ok(service.findAllByTypes(type, pageable));
+    @GetMapping("/findBy")
+    public ResponseEntity<Page<BoardDto>> findBy(@RequestParam(value = "title", required = false) String title,
+                                     @RequestParam(value = "type", required = false) String type,
+                                     @RequestParam(value = "category", required = false) String category,
+                                     @RequestParam(value = "userId", required = false) Long userId,
+                                     Pageable pageable) {
+        log.info("findBy con 진입 : {}, {}, {}, {}", title, type, category, userId);
+        return ResponseEntity.ok(service.findBy(title, type, category, userId, pageable));
     }
-
-    @GetMapping("/find-all-by-userId")
-    public ResponseEntity<Page<BoardDto>> findAllByUserId(@RequestParam("id") Long id, Pageable pageable) {
-        log.info(">>> findAllByUserId 진입 : {}, {}", id, pageable);
-        return ResponseEntity.ok(service.findAllByUserId(id, pageable));
-    }
-
-    @GetMapping("/find-all-by-email")
-    public ResponseEntity<List<BoardDto>> finAllByEmail(@RequestParam("email") String email) {
-        return ResponseEntity.ok(service.findAllByEmail(email));
-    }
-
-    @GetMapping("/find-all-by-type-title")
-    public ResponseEntity<Page<BoardDto>> findAllByTypeAndTitle(@RequestParam("type") String type,
-                                                                @RequestParam("title") String title,
-                                                                Pageable pageable) {
-        return ResponseEntity.ok(service.findAllByTypeAndTitle(type, title, pageable));
-    }
-
 
 }

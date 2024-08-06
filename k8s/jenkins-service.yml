@@ -1,17 +1,27 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jenkins-service
-  namespace: jenkins
-  annotations:
-      prometheus.io/scrape: 'true'
-      prometheus.io/path:   /
-      prometheus.io/port:   '8080'
+  name: jenkins
 spec:
-  selector:
-    app: jenkins-server
-  type: NodePort
+  type: LoadBalancer
   ports:
     - port: 8080
       targetPort: 8080
-      nodePort: 32000
+      nodePort: 30000
+  selector:
+    app: jenkins
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-jnlp
+  namespace: jenkins
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 50000
+      targetPort: 50000
+  selector:
+    app: jenkins

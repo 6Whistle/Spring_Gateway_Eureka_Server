@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: toeicdoit-gateway-service
+  name: toeicdoit-service
   labels:
-    app: toeicdoit-gateway-service
+    app: toeicdoit-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - name: gateway
     protocol: TCP 

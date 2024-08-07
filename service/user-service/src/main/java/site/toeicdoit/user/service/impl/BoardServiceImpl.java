@@ -15,8 +15,10 @@ import site.toeicdoit.user.domain.model.mysql.BoardModel;
 import site.toeicdoit.user.domain.model.mysql.QBoardModel;
 import site.toeicdoit.user.domain.vo.MessageStatus;
 import site.toeicdoit.user.domain.vo.Messenger;
+import site.toeicdoit.user.handler.AlreadyExistElementException;
 import site.toeicdoit.user.repository.mysql.BoardRepository;
 import site.toeicdoit.user.service.BoardService;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -32,22 +34,27 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     @Override
     public Messenger save(BoardDto dto) {
-        log.info(">>> Board Service Save 진입: {}", dto);
-        BoardModel result = boardRepository.save(dtoToEntity(dto));
-        log.info(">>> Board Service Save result : {}", result);
-        return Messenger.builder()
-                .message(MessageStatus.SUCCESS.name())
-                .build();
+        log.info("save board impl 진입: {}", dto);
+        if (dto != null) {
+            BoardModel result = boardRepository.save(dtoToEntity(dto));
+            return Messenger.builder()
+                    .message(MessageStatus.SUCCESS.name())
+                    .data(entityToDto(result))
+                    .build();
+        } else {
+            return Messenger.builder()
+                    .message(MessageStatus.FAILURE.name())
+                    .build();
+        }
     }
 
     @Override
     public Messenger deleteById(Long id) {
-        log.info(">>> Board Service Delete 진입: {}", id);
         if (boardRepository.existsById(id)) {
             boardRepository.deleteById(id);
-            return Messenger.builder().message("SUCCESS").build();
+            return Messenger.builder().message(MessageStatus.SUCCESS.name()).build();
         } else {
-            return Messenger.builder().message("FAILURE").build();
+            return Messenger.builder().message(MessageStatus.FAILURE.name()).build();
         }
     }
 
@@ -58,8 +65,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Optional<BoardDto> findById(Long id) {
-        log.info(">>> Board Service findById 진입: {}", id);
-        return boardRepository.findById(id).map(this::entityToDto);
+        return Optional.of(boardRepository.findById(id).map(this::entityToDto))
+                .orElseThrow(() -> new AlreadyExistElementException("존재하는 게시물이 없습니다."));
     }
 
     @Override
@@ -71,23 +78,33 @@ public class BoardServiceImpl implements BoardService {
     public Boolean existByEmail(String email) {
         return queryFactory.selectFrom(qBoard)
                 .where(qBoard.userId.email.eq(email))
-                .fetchAll() != null;
+                .fetch() != null;
     }
 
     @Transactional
     @Override
     public Messenger modify(BoardDto dto) {
-        log.info(">>> Board Service Modify 진입: {}", dto);
-        Long result = queryFactory.update(qBoard)
-                .set(qBoard.title, dto.getTitle())
-                .set(qBoard.content, dto.getContent())
-                .set(qBoard.category, dto.getCategory())
-                .where(qBoard.id.eq(dto.getId()))
-                .execute();
-        log.info(">>> Board modify 결과(Query DSL): {}", result);
-        return Messenger.builder()
-                .message(MessageStatus.SUCCESS.name())
-                .build();
+        if (dto != null && existById(dto.getId())) {
+            Long result = queryFactory.update(qBoard)
+                    .set(qBoard.title, dto.getTitle())
+                    .set(qBoard.content, dto.getContent())
+                    .set(qBoard.category, dto.getCategory())
+                    .where(qBoard.id.eq(dto.getId()))
+                    .execute();
+            return Messenger.builder()
+                    .message(MessageStatus.SUCCESS.name())
+                    .data(findById(result))
+                    .build();
+        } else if (!existById(dto.getId())) {
+            return Messenger.builder()
+                    .message("게시물이 존재하지 않습니다.")
+                    .build();
+        } else {
+            return Messenger.builder()
+                    .message("입력된 내용이 없습니다.")
+                    .build();
+        }
+
     }
 
     @Override
@@ -97,7 +114,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public Page<BoardDto> findBy(String title, String type, String category, Long userId, Pageable pageable){
+    public Page<BoardDto> findBy(String title, String type, String category, Long userId, Pageable pageable) {
         log.info("findByTest impl 진입 : {}, {}, {}, {}", title, type, category, userId);
         var board = queryFactory.selectFrom(qBoard)
                 .where(eqTitle(title), eqType(type), eqCategory(category), eqUserId(userId))

@@ -29,7 +29,7 @@ public interface BoardService extends CommandService<BoardDto>, QueryService<Boa
                 .writerName(entity.getUserId().getName())
                 .type(entity.getType())
                 .category(entity.getCategory())
-                .replyIds(entity.getReplyIds().stream().map(this::replyToDto).toList())
+                .replyIds(entity.getReplyIds() != null ? entity.getReplyIds().stream().map(this::replyToDto).toList() : null)
                 .createdAt(entity.getCreatedAt().toString())
                 .updatedAt(entity.getUpdatedAt().toString())
                 .build();

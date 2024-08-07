@@ -26,31 +26,26 @@ public class BoardController {
 
     @PostMapping("/save")
     public ResponseEntity<Messenger> save(@RequestBody BoardDto dto) {
-        log.info(">>save board con 진입: {}", dto);
         return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/modify")
     public ResponseEntity<Messenger> modify(@RequestBody BoardDto dto) {
-        log.info(">>> modify board con 진입: {}", dto);
         return ResponseEntity.ok(service.modify(dto));
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Messenger> deleteById(@RequestParam("id") Long id) {
-        log.info(">>> delete board con 진입: {}", id);
         return ResponseEntity.ok(service.deleteById(id));
     }
 
     @GetMapping("/find-by-id")
     public ResponseEntity<Optional<BoardDto>> findById(@RequestParam("id") Long id) {
-        log.info(">>> find board con 진입: {}", id);
         return ResponseEntity.ok(service.findById(id));
     }
 
     @GetMapping("/exist-by-id")
     public ResponseEntity<Boolean> existById(@RequestParam("id") Long id) {
-        log.info(">>> exist board con 진입: {}", id);
         return ResponseEntity.ok(service.existById(id));
     }
 
@@ -65,7 +60,6 @@ public class BoardController {
                                      @RequestParam(value = "category", required = false) String category,
                                      @RequestParam(value = "userId", required = false) Long userId,
                                      Pageable pageable) {
-        log.info("findBy con 진입 : {}, {}, {}, {}", title, type, category, userId);
         return ResponseEntity.ok(service.findBy(title, type, category, userId, pageable));
     }
 

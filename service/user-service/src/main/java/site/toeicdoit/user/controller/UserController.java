@@ -10,6 +10,7 @@ import site.toeicdoit.user.domain.vo.PageRequestVo;
 import site.toeicdoit.user.service.UserService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequestMapping(path = "/api/user")
@@ -44,11 +45,10 @@ public class UserController {
     }
 
     @PutMapping("/modify-by-password")
-    public ResponseEntity<Messenger> modifyByPassword(@RequestParam("id") Long id,
+    public ResponseEntity<Messenger> modifyByPassword(@RequestParam("email") String email,
                                                       @RequestParam("oldPassword") String oldPassword,
                                                       @RequestParam("newPassword") String newPassword) {
-        log.info(">>> modifyByPassword con 진입 : {}, {}, {} ", id, oldPassword, newPassword);
-        return ResponseEntity.ok(service.modifyByPassword(id, oldPassword, newPassword));
+        return ResponseEntity.ok(service.modifyByPassword(email, oldPassword, newPassword));
     }
 
     @DeleteMapping("/delete")
@@ -68,9 +68,12 @@ public class UserController {
 
     @PutMapping("/modify-by-name-phone")
     public ResponseEntity<Messenger> modifyByNameAndPhone(@RequestBody UserDto dto) {
-        log.info(">>> modifyByNameAndPhone con 정보 : {}", dto);
         return ResponseEntity.ok(service.modifyByNameAndPhone(dto));
     }
 
+    @GetMapping("/find-by-name-profile")
+    public ResponseEntity<Map<Long, List<String>>> findByNameAndProfile(@RequestBody Map<String, List<Long>> ids){
+        return ResponseEntity.ok(service.findByNameAndProfile(ids));
+    }
 
 }

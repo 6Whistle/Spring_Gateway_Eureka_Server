@@ -1,6 +1,7 @@
 package site.toeicdoit.user.domain.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.stereotype.Component;
 import site.toeicdoit.user.domain.model.mysql.ReplyModel;
@@ -24,6 +25,8 @@ public class BoardDto {
 
 
     private String writerName;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private String createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private String updatedAt;
 }

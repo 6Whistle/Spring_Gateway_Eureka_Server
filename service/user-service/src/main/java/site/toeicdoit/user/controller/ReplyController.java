@@ -22,25 +22,27 @@ public class ReplyController {
 
     @PostMapping("/save")
     public ResponseEntity<Messenger> save(@RequestBody ReplyDto dto) {
-        log.info(">>save reply con 진입: {}", dto);
         return ResponseEntity.ok(replyService.save(dto));
     }
 
     @PutMapping("/modify-by-content")
     public ResponseEntity<Messenger> modify(@RequestBody ReplyDto dto) {
-        log.info(">>> modify reply con 진입: {}", dto);
         return ResponseEntity.ok(replyService.modify(dto));
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Messenger> deleteById(@RequestParam("id") Long id) {
-        log.info(">>> delete reply con 진입: {}", id);
         return ResponseEntity.ok(replyService.deleteById(id));
     }
 
     @GetMapping("/find-all-by-boardId")
     public ResponseEntity<List<ReplyDto>> findAllByBoardId(@RequestParam("boardId") Long boardId) {
         return ResponseEntity.ok(replyService.findAllByBoardId(boardId));
+    }
+
+    @GetMapping("/find-all-by-userId")
+    public ResponseEntity<List<ReplyDto>> findAllByUserId(@RequestParam("userId") Long userId) {
+        return ResponseEntity.ok(replyService.findAllByUserId(userId));
     }
 
 }

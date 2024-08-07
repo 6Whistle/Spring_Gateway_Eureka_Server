@@ -1,10 +1,13 @@
 pipeline {
     agent any
-    
+	
     environment { 
         PUSH_VERSION = "latest"
         COMPOSE_TAGNAME = 'toeicdoit'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        NKS_TOKEN_CREDENTIALS = credentials("nks-token")
+        KUBECONFIG_CREDENTIALS = credentials("kubeconfig")
+        services = "gateway,eureka,user,chat,tx,toeic"
     }
     
     stages {
@@ -23,32 +26,20 @@ pipeline {
         stage("Java Build") {
             steps {
                 script {
-                    sh "echo Git Clone SUCCESS"
                     sh "chmod +x ./gradlew"
                     sh "./gradlew clean build"
                 }
             }
         }
-        
+                
         stage("Docker Image Remove") {
             steps {
-                sh "docker rmi -f $COMPOSE_TAGNAME/gateway:$PUSH_VERSION"
-                sh "docker rmi -f $DOCKERHUB_CREDENTIALS_USR/gateway:$PUSH_VERSION"
-                
-                sh "docker rmi -f $COMPOSE_TAGNAME/eureka:$PUSH_VERSION"
-                sh "docker rmi -f $DOCKERHUB_CREDENTIALS_USR/eureka:$PUSH_VERSION"
-                
-                sh "docker rmi -f $COMPOSE_TAGNAME/user:$PUSH_VERSION"
-                sh "docker rmi -f $DOCKERHUB_CREDENTIALS_USR/user:$PUSH_VERSION"
-                
-                sh "docker rmi -f $COMPOSE_TAGNAME/chat:$PUSH_VERSION"
-                sh "docker rmi -f $DOCKERHUB_CREDENTIALS_USR/chat:$PUSH_VERSION"
-                
-                sh "docker rmi -f $COMPOSE_TAGNAME/toeic:$PUSH_VERSION"
-                sh "docker rmi -f $DOCKERHUB_CREDENTIALS_USR/toeic:$PUSH_VERSION"
-                
-                sh "docker rmi -f $COMPOSE_TAGNAME/tx:$PUSH_VERSION"
-                sh "docker rmi -f $DOCKERHUB_CREDENTIALS_USR/tx:$PUSH_VERSION"
+                script {
+                    services.split(',').each { service ->
+                        sh "docker rmi -f $COMPOSE_TAGNAME/${service}:$PUSH_VERSION"
+                        sh "docker rmi -f $DOCKERHUB_CREDENTIALS_USR/${service}:$PUSH_VERSION"
+                    }
+                }
             }
         }
         
@@ -60,23 +51,31 @@ pipeline {
         
         stage("Docker Image Tag") {
             steps {
-                sh "docker image tag $COMPOSE_TAGNAME/gateway:$PUSH_VERSION $DOCKERHUB_CREDENTIALS_USR/gateway:$PUSH_VERSION"
-                sh "docker image tag $COMPOSE_TAGNAME/eureka:$PUSH_VERSION $DOCKERHUB_CREDENTIALS_USR/eureka:$PUSH_VERSION"
-                sh "docker image tag $COMPOSE_TAGNAME/user:$PUSH_VERSION $DOCKERHUB_CREDENTIALS_USR/user:$PUSH_VERSION"
-                sh "docker image tag $COMPOSE_TAGNAME/chat:$PUSH_VERSION $DOCKERHUB_CREDENTIALS_USR/chat:$PUSH_VERSION"
-                sh "docker image tag $COMPOSE_TAGNAME/tx:$PUSH_VERSION $DOCKERHUB_CREDENTIALS_USR/tx:$PUSH_VERSION"
-                sh "docker image tag $COMPOSE_TAGNAME/toeic:$PUSH_VERSION $DOCKERHUB_CREDENTIALS_USR/toeic:$PUSH_VERSION"
+                script {
+                    services.split(',').each { service ->
+                        sh "docker tag $COMPOSE_TAGNAME/${service}:$PUSH_VERSION $DOCKERHUB_CREDENTIALS_USR/$service:$PUSH_VERSION"
+                    }
+                }
             }
         }
         
         stage("Docker Push") {
             steps {
-                sh "docker push $DOCKERHUB_CREDENTIALS_USR/gateway:$PUSH_VERSION"
-                sh "docker push $DOCKERHUB_CREDENTIALS_USR/eureka:$PUSH_VERSION"
-                sh "docker push $DOCKERHUB_CREDENTIALS_USR/user:$PUSH_VERSION"
-                sh "docker push $DOCKERHUB_CREDENTIALS_USR/chat:$PUSH_VERSION"
-                sh "docker push $DOCKERHUB_CREDENTIALS_USR/tx:$PUSH_VERSION"
-                sh "docker push $DOCKERHUB_CREDENTIALS_USR/toeic:$PUSH_VERSION"
+                script {
+                    services.split(',').each { service ->
+                        sh "docker push $DOCKERHUB_CREDENTIALS_USR/${service}:$PUSH_VERSION"
+                    }
+                }
+            }
+        }
+        
+        stage('Apply Kubernetes files') {
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig']) {
+                    sh "kubectl --kubeconfig=$HOME/.ncloud/kubeconfig.yml get nodes"
+                    sh 'kubectl --kubeconfig=$HOME/.ncloud/kubeconfig.yml apply -f ./k8s/toeicdoit-deployment.yml'
+                    sh 'kubectl --kubeconfig=$HOME/.ncloud/kubeconfig.yml apply -f ./k8s/toeicdoit-service.yml'
+                }
             }
         }
     }

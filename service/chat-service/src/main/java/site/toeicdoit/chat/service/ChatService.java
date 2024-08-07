@@ -31,6 +31,7 @@ public interface ChatService extends CommandService<ChatFluxModel, ChatDTO>, Que
         .id(model.getId())
         .roomId(model.getRoomId())
         .senderId(model.getSenderId())
+        .senderName(model.getSenderName())
         .message(model.getMessage())
         .createdAt(model.getCreatedAt())
         .updatedAt(model.getUpdatedAt())

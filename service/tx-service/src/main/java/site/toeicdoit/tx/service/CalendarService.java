@@ -7,6 +7,7 @@ import site.toeicdoit.tx.domain.model.CalendarModel;
 import site.toeicdoit.tx.domain.vo.Messenger;
 import site.toeicdoit.tx.domain.model.UserModel;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CalendarService extends CommandService<CalendarDto>, QueryService<CalendarDto> {
@@ -19,6 +20,7 @@ public interface CalendarService extends CommandService<CalendarDto>, QueryServi
                 .userId(entity.getUserId().getId())
                 .startTime(entity.getStartTime())
                 .endTime(entity.getEndTime())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 
@@ -29,6 +31,7 @@ public interface CalendarService extends CommandService<CalendarDto>, QueryServi
                 .userId(UserModel.builder().id(dto.getUserId()).build())
                 .startTime(dto.getStartTime())
                 .endTime(dto.getEndTime())
+                .createdAt(LocalDateTime.now())
                 .build();
     }
     Messenger save(List<CalendarDto> calendarDto);

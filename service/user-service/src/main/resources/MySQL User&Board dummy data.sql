@@ -22,7 +22,7 @@ BEGIN
             END IF;
             INSERT INTO user_model(id, email, name, phone, toeic_level, registration, created_at, updated_at)
             VALUES (i, concat('email', i, '@test.com'), concat('이름', i),
-                    concat('010', lpad(floor(1 + (RAND() * 99999999)), 8, '0')), FLOOR(1 + (RAND() * 10)), regVal,
+                    concat('010', lpad(floor(1 + (RAND() * 99999999)), 8, '0')), FLOOR(1 + (RAND() * 9)), regVal,
                     now(), now());
             INSERT INTO calendar_model(user_id, title, is_all_day, start_time, end_time, created_at, updated_at)
             VALUES (i, concat('제목', i), calendarVal, now(), now(), now(), now());

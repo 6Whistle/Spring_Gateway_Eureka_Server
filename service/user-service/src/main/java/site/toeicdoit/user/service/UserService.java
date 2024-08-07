@@ -7,6 +7,8 @@ import site.toeicdoit.user.domain.model.mysql.UserModel;
 import site.toeicdoit.user.domain.vo.Messenger;
 import site.toeicdoit.user.domain.vo.Role;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UserService extends CommandService<UserDto>, QueryService<UserDto> {
@@ -57,6 +59,8 @@ public interface UserService extends CommandService<UserDto>, QueryService<UserD
     LoginResultDto login(UserDto dto);
     Optional<UserDto> findByEmail(String email);
 
-    Messenger modifyByPassword(Long id, String oldPassword, String newPassword);
+    Messenger modifyByPassword(String email, String oldPassword, String newPassword);
     Messenger modifyByNameAndPhone(UserDto dto);
+
+    Map<Long, List<String>> findByNameAndProfile(Map<String, List<Long>> ids);
 }

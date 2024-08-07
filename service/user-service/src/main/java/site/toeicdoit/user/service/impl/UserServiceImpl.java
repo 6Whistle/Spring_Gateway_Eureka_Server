@@ -1,6 +1,5 @@
 package site.toeicdoit.user.service.impl;
 
-import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +15,10 @@ import site.toeicdoit.user.domain.vo.MessageStatus;
 import site.toeicdoit.user.domain.vo.Messenger;
 import site.toeicdoit.user.domain.vo.Registration;
 import site.toeicdoit.user.domain.vo.Role;
-import site.toeicdoit.user.repository.mysql.CalendarRepository;
+import site.toeicdoit.user.handler.AlreadyExistElementException;
 import site.toeicdoit.user.repository.mysql.RoleRepository;
 import site.toeicdoit.user.service.UserService;
 import site.toeicdoit.user.repository.mysql.UserRepository;
-
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -32,32 +30,34 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final JPAQueryFactory queryFactory;
     private final QUserModel qUser = QUserModel.userModel;
-    private final QRoleModel qRole = QRoleModel.roleModel;
     private final RoleRepository roleRepository;
-    private final CalendarRepository calendarRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
+    @Transactional
     public Messenger save(UserDto dto) {
-        log.info(">>> user save Impl 진입: {} ", dto);
-        dto.setRegistration(Registration.LOCAL.name());
-        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
-
-        var joinUser = userRepository.save(dtoToEntity(dto));
-        log.info(">>> user save 결과 : {}", joinUser);
-        var joinUserRole = roleRepository.save(RoleModel.builder().role(0).userId(joinUser).build());
-        log.info(">>> ROLE save 결과 : {}", joinUserRole);
-        var joinUserCalendar = calendarRepository.save(CalendarModel.builder().userId(joinUser).build());
-        log.info(">>> 캘린더 save 결과 : {}", joinUserCalendar);
-
-        return Messenger.builder()
-                .message(MessageStatus.SUCCESS.name())
-                .build();
+        if (dto == null) {
+            throw new ArithmeticException("입력된 내용이 없습니다.");
+        } else if (!existByEmail(dto.getEmail())) {
+            dto.setRegistration(Registration.LOCAL.name());
+            dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+            var result = Stream.of(userRepository.save(dtoToEntity(dto)))
+                    .map(i -> roleRepository.save(RoleModel.builder().role(0).userId(i).build()))
+                    .findFirst().orElseThrow(() -> new AlreadyExistElementException("회원가입에 실패했습니다."));
+            return Messenger.builder()
+                    .message(MessageStatus.SUCCESS.name())
+                    .build();
+        } else {
+            return Messenger.builder()
+                    .message("동일한 Email이 존재합니다.")
+                    .build();
+        }
     }
 
     @Override
+    @Transactional
     public LoginResultDto oauthJoinOrLogin(OAuth2UserDto dto, String registration) {
-        log.info(">>> oauthJoin Impl 진입: {}", dto);
+        log.info("oauthJoinOrLogin impl 진입 : {}, {}", dto, registration);
         UserModel user = userRepository.findByEmail(dto.email())
                 .stream()
                 .peek(i -> i.setName(dto.name()))
@@ -70,8 +70,8 @@ public class UserServiceImpl implements UserService {
                         .oauthId(dto.id())
                         .registration(registration)
                         .build());
-        if (user.getRegistration().equals(Registration.GOOGLE.name())) {
-            if (existByEmail(dto.email())) {
+        if (existByEmail(dto.email())) {
+            if (user.getRegistration().equals(Registration.GOOGLE.name())) {
                 var existOauthUpdate = userRepository.save(user);
                 return LoginResultDto.builder()
                         .user(UserDto.builder()
@@ -81,38 +81,38 @@ public class UserServiceImpl implements UserService {
                                 .registration(existOauthUpdate.getRegistration())
                                 .build())
                         .build();
+            } else if (user.getRegistration().equals(Registration.LOCAL.name())) {
+                throw new AlreadyExistElementException("local에 가입된 정보가 있습니다.");
             } else {
-                var saveUser = userRepository.save(user);
-                var roleSave = roleRepository.save(RoleModel.builder().role(0).userId(saveUser).build());
-                var calendarSave = calendarRepository.save(CalendarModel.builder().userId(roleSave.getUserId()).build());
-
-                return LoginResultDto.builder()
-                        .user(UserDto.builder()
-                                .id(saveUser.getId())
-                                .email(saveUser.getEmail())
-                                .roles(Stream.of(roleSave.getRole()).map(Role::getRole).toList())
-                                .registration(saveUser.getRegistration())
-                                .build())
-                        .build();
+                throw new AlreadyExistElementException("접근 경로가 잘못되었습니다.");
             }
         } else {
-            return null;
+            RoleModel saveOauth = Stream.of(userRepository.save(user))
+                    .map(i -> roleRepository.save(RoleModel.builder().role(0).userId(i).build()))
+                    .findFirst().orElseThrow(() -> new AlreadyExistElementException("회원가입 실패"));
+            return LoginResultDto.builder()
+                    .user(UserDto.builder()
+                            .id(saveOauth.getUserId().getId())
+                            .email(saveOauth.getUserId().getEmail())
+                            .roles(List.of(Role.getRole(saveOauth.getRole())))
+                            .registration(saveOauth.getUserId().getRegistration())
+                            .build())
+                    .build();
         }
     }
-
 
     @Transactional
     @Override
     public LoginResultDto login(UserDto dto) {
-        log.info(">>> localLogin Impl 진입: {} ", dto);
-        if (dto.getEmail().equals("admin")){
+        if (dto.getEmail().equals("admin@test.com")) {
             UserModel admin = userRepository.findByEmail(dto.getEmail()).get();
-            return admin.getPassword().equals(dto.getPassword())?
+            return admin.getPassword().equals(dto.getPassword()) ?
                     LoginResultDto.builder()
                             .user(UserDto.builder()
                                     .id(admin.getId())
                                     .email(admin.getEmail())
                                     .roles(admin.getRoleIds().stream().map(i -> Role.getRole(i.getRole())).toList())
+                                    .registration("LOCAL")
                                     .build())
                             .build() : null;
         }
@@ -125,12 +125,11 @@ public class UserServiceImpl implements UserService {
                                 .roles(existEmail.getRoleIds().stream().map(i -> Role.getRole(i.getRole())).toList())
                                 .registration(existEmail.getRegistration())
                                 .build())
-                        .build() : null; // 비번 틀릴 경우 에러 처리 필요
+                        .build() : null;
     }
 
     @Override
     public Boolean existByEmail(String email) {
-        log.info(">>> existsByEmail Impl 진입: {}", email);
         return userRepository.existsByEmail(email);
     }
 
@@ -138,8 +137,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Messenger deleteById(Long id) {
-        log.info(">>> user deleteById Impl 진입: {} ", id);
-
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
             return Messenger.builder().message(MessageStatus.SUCCESS.name()).build();
@@ -155,14 +152,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserDto> findById(Long id) {
-        log.info("user findById 결과 : {}", userRepository.findById(id).map(this::entityToDto));
-        // 결과 보고 없을 경우도 코딩 필요
-        return userRepository.findById(id).map(this::entityToDto);
+        return Optional.of(userRepository.findById(id).map(this::entityToDto))
+                .orElseThrow(() -> new AlreadyExistElementException("존재하는 아이디가 없습니다."));
     }
 
     @Override
     public Optional<UserDto> findByEmail(String email) {
-        return userRepository.findByEmail(email).map(this::entityToDto);
+        return Optional.of(userRepository.findByEmail(email).map(this::entityToDto))
+                .orElseThrow(() -> new AlreadyExistElementException("존재하는 Email이 없습니다."));
     }
 
     @Override
@@ -180,26 +177,33 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Messenger modify(UserDto dto) {
-        log.info(">>> user modify Impl 진입: {}", dto);
-        var updateUser = queryFactory.update(qUser)
-                .set(qUser.name, dto.getName())
-                .set(qUser.email, dto.getEmail())
-                .set(qUser.profile, dto.getProfile())
-                .where(qUser.id.eq(dto.getId()))
-                .execute();
-
-        log.info(">>> user modify Impl 결과 : {}", updateUser);
-
-        return Messenger.builder()
-                .message(MessageStatus.SUCCESS.name())
-                .build();
+        if (dto == null) {
+            return Messenger.builder()
+                    .message("입력된 정보가 없습니다.")
+                    .build();
+        } else if (existByEmail(dto.getEmail())) {
+            var updateUser = queryFactory.update(qUser)
+                    .set(qUser.name, dto.getName())
+                    .set(qUser.email, dto.getEmail())
+                    .set(qUser.profile, dto.getProfile())
+                    .where(qUser.id.eq(dto.getId()))
+                    .execute();
+            return Messenger.builder()
+                    .message(MessageStatus.SUCCESS.name())
+                    .data(findById(updateUser))
+                    .build();
+        } else {
+            return Messenger.builder()
+                    .message("Email 정보가 존재하지 않습니다.")
+                    .build();
+        }
     }
 
     @Override
     @Transactional
-    public Messenger modifyByPassword(Long id, String oldPassword, String newPassword) {
-        if (userRepository.existsById(id)) {
-            var updateUser = userRepository.findById(id).get();
+    public Messenger modifyByPassword(String email, String oldPassword, String newPassword) {
+        if (userRepository.existsByEmail(email)) {
+            var updateUser = userRepository.findByEmail(email).get();
             if (passwordEncoder.matches(oldPassword, updateUser.getPassword())) {
                 queryFactory.update(qUser)
                         .set(qUser.password, passwordEncoder.encode(newPassword))
@@ -210,25 +214,46 @@ public class UserServiceImpl implements UserService {
                 return Messenger.builder().message("이전 비밀번호와 다릅니다.").build();
             }
         } else {
-            return Messenger.builder().message("email 정보가 존재하지 않습니다.").build();
+            return Messenger.builder().message("Email 정보가 존재하지 않습니다.").build();
         }
     }
 
     @Transactional
     @Override
     public Messenger modifyByNameAndPhone(UserDto dto) {
-        log.info(">>> user modifyByNameAndPhone Impl 진입: {}", dto);
-        long user = queryFactory.update(qUser)
-                .set(qUser.name, dto.getName())
-                .set(qUser.phone, dto.getPhone())
-                .where(qUser.id.eq(dto.getId()))
-                .execute();
+        if (dto == null) {
+            return Messenger.builder()
+                    .message("입력된 정보가 없습니다.")
+                    .build();
+        } else if (existByEmail(dto.getEmail())) {
+            long user = queryFactory.update(qUser)
+                    .set(qUser.name, dto.getName())
+                    .set(qUser.phone, dto.getPhone())
+                    .where(qUser.id.eq(dto.getId()))
+                    .execute();
+            return Messenger.builder()
+                    .message(MessageStatus.SUCCESS.name())
+                    .data(findById(user))
+                    .build();
+        } else {
+            return Messenger.builder()
+                    .message("Email 정보가 존재하지 않습니다.")
+                    .build();
+        }
+    }
 
-        log.info(">>> user modifyByNameAndPhone Impl 결과 : {}", user);
 
-        return Messenger.builder()
-                .message(MessageStatus.SUCCESS.name())
-                .build();
+
+    @Override
+    public Map<Long, List<String>> findByNameAndProfile(Map<String, List<Long>> ids) {
+        Map<Long, List<String>> userMap = new HashMap<>();
+        for (List<Long> list : ids.values()) {
+            for (Long id : list) {
+                UserDto user = findById(id).orElseThrow(() -> new AlreadyExistElementException("Email 정보가 없습니다."));
+                userMap.put(user.getId(), List.of(user.getName(), user.getProfile() == null ? "" : user.getProfile()));
+            }
+        }
+        return userMap;
     }
 
 }

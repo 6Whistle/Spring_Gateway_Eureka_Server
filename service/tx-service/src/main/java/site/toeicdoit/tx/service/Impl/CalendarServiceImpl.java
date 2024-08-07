@@ -69,14 +69,14 @@ public class CalendarServiceImpl implements CalendarService {
                 .build();
     }
 
-    @Transactional
     @Override
     public Messenger save(List<CalendarDto> calendarDto) {
-        log.info("ArticleModel save Impl: {}", calendarDto);
 
         List<CalendarModel> savedModels = calendarDto.stream()
                 .filter(dto -> !isDuplicate(dto))
+                .peek(System.out::println)
                 .map(this::dtoToEntity)
+                .peek(System.out::println)
                 .map(repo::save)
                 .toList();
 

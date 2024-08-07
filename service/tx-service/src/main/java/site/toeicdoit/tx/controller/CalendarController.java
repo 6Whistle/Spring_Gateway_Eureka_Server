@@ -21,7 +21,7 @@ public class CalendarController {
 
     @PostMapping("/save")
     public ResponseEntity<Messenger> save(@RequestBody List<CalendarDto> event) {
-        log.info("CalendarDto save con: {}", event);
+        log.info("입력받은 정보: {}",event);
         return ResponseEntity.ok(calendarService.save(event));
     }
 

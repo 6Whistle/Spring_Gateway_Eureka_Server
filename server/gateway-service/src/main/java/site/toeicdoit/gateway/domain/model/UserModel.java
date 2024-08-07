@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import site.toeicdoit.gateway.domain.vo.Registration;
 import site.toeicdoit.gateway.domain.vo.Role;
 
 @Getter

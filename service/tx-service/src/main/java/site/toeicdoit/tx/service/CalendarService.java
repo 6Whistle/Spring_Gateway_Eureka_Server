@@ -20,7 +20,7 @@ public interface CalendarService extends CommandService<CalendarDto>, QueryServi
                 .userId(entity.getUserId().getId())
                 .startTime(entity.getStartTime())
                 .endTime(entity.getEndTime())
-                .createdAt(entity.getCreatedAt())
+                // .createdAt(entity.getCreatedAt())
                 .build();
     }
 
@@ -31,7 +31,7 @@ public interface CalendarService extends CommandService<CalendarDto>, QueryServi
                 .userId(UserModel.builder().id(dto.getUserId()).build())
                 .startTime(dto.getStartTime())
                 .endTime(dto.getEndTime())
-                .createdAt(LocalDateTime.now())
+                // .createdAt(LocalDateTime.now())
                 .build();
     }
     Messenger save(List<CalendarDto> calendarDto);

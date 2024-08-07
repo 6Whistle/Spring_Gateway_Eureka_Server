@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import site.toeicdoit.toeic.domain.vo.PaymentStatus;
 
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -40,5 +39,4 @@ public class PaymentModel extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscribe_id")
     private SubscribeModel subscribeId;
-
 }

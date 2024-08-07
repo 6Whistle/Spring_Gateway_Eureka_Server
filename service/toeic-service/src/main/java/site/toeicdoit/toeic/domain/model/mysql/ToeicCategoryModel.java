@@ -1,12 +1,7 @@
 package site.toeicdoit.toeic.domain.model.mysql;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
@@ -24,7 +19,6 @@ public class ToeicCategoryModel extends BaseModel {
     private Long id;
     private String title; //기출제목
     private String sound; //기출음성
-    private String script; //Lc 스크립트 URL\
     private String testType; //기출 유형
 
     @OneToMany(mappedBy = "toeicCategoryId", fetch = FetchType.LAZY)
@@ -33,4 +27,3 @@ public class ToeicCategoryModel extends BaseModel {
     @OneToOne(mappedBy = "toeicCategoryId", fetch = FetchType.LAZY)
     private ResultModel resultId;
 }
-

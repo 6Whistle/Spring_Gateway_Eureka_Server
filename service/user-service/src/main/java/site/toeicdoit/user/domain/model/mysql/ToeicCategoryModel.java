@@ -19,7 +19,6 @@ public class ToeicCategoryModel extends BaseModel {
     private Long id;
     private String title; //기출제목
     private String sound; //기출음성
-    private String script; //Lc 스크립트 URL\
     private String testType; //기출 유형
 
     @OneToMany(mappedBy = "toeicCategoryId", fetch = FetchType.LAZY)

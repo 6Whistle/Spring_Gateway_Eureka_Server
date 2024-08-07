@@ -15,7 +15,6 @@ public class ToeicCategoryDto {
     private Long id;
     private String title;
     private String sound;
-    private String script;
     private String testType;
 
 

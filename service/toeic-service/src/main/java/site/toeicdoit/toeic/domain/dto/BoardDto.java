@@ -4,8 +4,6 @@ package site.toeicdoit.toeic.domain.dto;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 @Component
 @AllArgsConstructor
 @NoArgsConstructor

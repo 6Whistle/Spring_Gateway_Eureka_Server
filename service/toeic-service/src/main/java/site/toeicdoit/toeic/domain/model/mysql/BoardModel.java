@@ -1,15 +1,16 @@
 package site.toeicdoit.toeic.domain.model.mysql;
 
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 @ToString(exclude = {"id"})
 public class BoardModel extends BaseModel {
 
@@ -20,6 +21,7 @@ public class BoardModel extends BaseModel {
     private String title;
     private String content;
     private String type;
+    private String category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

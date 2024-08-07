@@ -3,7 +3,6 @@ package site.toeicdoit.toeic.domain.model.mysql;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 import java.util.List;
 
 @Entity
@@ -28,6 +27,4 @@ public class ProductModel extends BaseModel {
 
     @OneToMany(mappedBy = "productId", fetch = FetchType.LAZY)
     private List<PaymentModel> paymentIds;
-
-
 }

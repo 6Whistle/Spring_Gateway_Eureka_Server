@@ -1,5 +1,6 @@
 package site.toeicdoit.toeic.domain.model.mysql;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -28,6 +29,7 @@ public class ToeicModel extends BaseModel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "toeicCategory_id")
+    @JsonBackReference
     private ToeicCategoryModel toeicCategoryId;
 
     @OneToOne(mappedBy = "toeicId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

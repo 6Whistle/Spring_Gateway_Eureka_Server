@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.toeicdoit.tx.domain.vo.ExceptionStatus;
 import site.toeicdoit.tx.domain.vo.Messenger;
 import site.toeicdoit.tx.domain.model.UserModel;
+import site.toeicdoit.tx.exception.TxException;
 import site.toeicdoit.tx.service.SubscribeService;
 import site.toeicdoit.tx.domain.dto.SubscribeDto;
 import site.toeicdoit.tx.domain.model.SubscribeModel;
@@ -30,10 +32,13 @@ public class SubscribeServiceImpl implements SubscribeService {
         }
 
         if (dto.getEndDate() == null) {
-            throw new IllegalArgumentException("End date cannot be null");
+            throw new TxException(ExceptionStatus.NOT_FOUND, "구독 종료일이 없습니다.");
         }
         if (dto.getCreatedAt() == null) {
-            throw new IllegalArgumentException("Creation date cannot be null");
+            throw new TxException(ExceptionStatus.NOT_FOUND, "구독 생성일이 없습니다.");
+        }
+        if (dto.getUserId() == null) {
+            throw new TxException(ExceptionStatus.NOT_FOUND, "사용자 ID가 없습니다.");
         }
 
 
@@ -43,17 +48,9 @@ public class SubscribeServiceImpl implements SubscribeService {
             subscribeRepository.save(dtoToEntity(dto));
         } else {
             dto.setSubscribeState(false);
-
-            return Messenger.builder()
-                    .message("구독 종료일이 현재 날짜보다 이전입니다.")
-                    .state(Boolean.FALSE)
-                    .build();
+            throw new TxException(ExceptionStatus.INVALID_INPUT, "종료일이 시작일보다 빠릅니다.");
         }
-
         Long id = subscribeRepository.findIdByendDate(dto.getEndDate());
-
-
-
 
         return Messenger.builder()
                 .state(Boolean.TRUE)
@@ -68,6 +65,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 
         // 각 구독 정보에 대해 조건을 적용합니다.
         for (SubscribeModel subscription : subscriptions) {
+
             // endDate가 현재 시간 이후이면 true로 설정하고 저장
             if (subscription.getEndDate().isAfter(LocalDateTime.now())) {
                 subscription.setSubscribeState(true);

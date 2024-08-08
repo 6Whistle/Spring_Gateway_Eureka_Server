@@ -37,4 +37,10 @@ public class CalendarController {
         log.info("ArticleModel findById con: {}", userId);
         return ResponseEntity.ok(Messenger.builder().message("Find CalendarDto Successfully").state(Boolean.TRUE).data(calendarService.findAllByUserId(userId)).build());
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Messenger> delete(@RequestParam("id") Long id ) {
+        log.info("CalendarDto delete con: {}", id);
+        return ResponseEntity.ok(calendarService.delete(id));
+    }
 }

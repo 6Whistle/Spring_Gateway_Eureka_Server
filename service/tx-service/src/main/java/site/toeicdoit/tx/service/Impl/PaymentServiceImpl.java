@@ -10,9 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.toeicdoit.tx.domain.vo.ExceptionStatus;
 import site.toeicdoit.tx.domain.vo.Messenger;
 import site.toeicdoit.tx.domain.dto.PaymentDto;
 import site.toeicdoit.tx.domain.model.UserModel;
+import site.toeicdoit.tx.exception.TxException;
 import site.toeicdoit.tx.repository.PaymentRepository;
 import site.toeicdoit.tx.repository.UserRepository;
 import site.toeicdoit.tx.service.PaymentService;
@@ -38,9 +40,18 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Messenger save(PaymentDto dto) {
-        log.info(dto.getPaymentUid());
-        log.info(dto.getAmount().toString());
-        log.info(dto.getProductId().toString());
+
+        if (dto.getAmount() == 0) {
+            throw new TxException(ExceptionStatus.INVALID_INPUT, "결제 금액은 0원일 수 없습니다.");
+        }
+        if (dto.getPaymentUid() == null) {
+            throw new TxException(ExceptionStatus.NOT_FOUND, "결제 정보가 없습니다.");
+        }
+        if (dto.getProductId() == null) {
+            throw new TxException(ExceptionStatus.NOT_FOUND, "상품 정보가 없습니다.");
+        }
+
+
 
         paymentRepository.save(dtoToEntity(dto));
          Long paymentId = paymentRepository.findIdByPaymentUid(dto.getPaymentUid());
@@ -61,7 +72,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Messenger refund(PaymentDto dto) throws IamportResponseException, IOException {
-        log.info(dto.getPaymentUid());
+
+        if (dto.getPaymentUid() == null) {
+            throw new TxException(ExceptionStatus.NOT_FOUND, "결제 정보가 없습니다.");
+        }
+        if (dto.getAmount() == 0) {
+            throw new TxException(ExceptionStatus.INVALID_INPUT, "환불 금액은 0원일 수 없습니다.");
+        }
+
         IamportResponse<Payment> response = iamportClient.paymentByImpUid(dto.getPaymentUid());
         //cancelData 생성
         CancelData cancelData = createCancelData(response, Math.toIntExact(dto.getAmount()));

@@ -24,4 +24,6 @@ public class ToeicDto {
     private String createdAt;
     private String updatedAt;
 
+    private long toeicCategoryId;
+
 }

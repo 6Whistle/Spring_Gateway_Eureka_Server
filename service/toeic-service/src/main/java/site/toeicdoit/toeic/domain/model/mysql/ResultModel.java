@@ -9,6 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 @Entity
 @ToString(exclude = {"id"})
 public class ResultModel extends BaseModel {
@@ -18,7 +19,7 @@ public class ResultModel extends BaseModel {
     private Long id;
     private String userAnswer;
     private boolean isCorrect; //정답유무
-    private String timeElasped; //풀이시간
+    private String timeElapsed; //풀이시간
     private String score; //점수
     private String lcScore; //lc점수
     private String rcScore; //rc점수

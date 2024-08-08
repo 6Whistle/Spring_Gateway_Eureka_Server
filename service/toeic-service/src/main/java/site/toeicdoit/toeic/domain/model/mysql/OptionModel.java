@@ -1,7 +1,7 @@
 package site.toeicdoit.toeic.domain.model.mysql;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @Getter
 @Entity
-@ToString(exclude = {"id"})
+@ToString(exclude = "id")
 public class OptionModel extends BaseModel {
     @Id
     @Column(name = "id", nullable = false)

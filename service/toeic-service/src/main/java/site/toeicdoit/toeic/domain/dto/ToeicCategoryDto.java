@@ -3,6 +3,8 @@ package site.toeicdoit.toeic.domain.dto;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,5 +22,7 @@ public class ToeicCategoryDto {
 
     private String createdAt;
     private String updatedAt;
+
+    private List<ToeicCategoryDto> toeicQuestions;
 
 }

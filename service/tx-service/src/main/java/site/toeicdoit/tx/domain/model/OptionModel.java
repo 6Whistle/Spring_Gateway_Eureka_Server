@@ -1,5 +1,7 @@
 package site.toeicdoit.tx.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,6 +35,7 @@ public class OptionModel extends BaseModel {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "toeic_id")
+    @JsonBackReference
     private ToeicModel toeicId;
 
 }

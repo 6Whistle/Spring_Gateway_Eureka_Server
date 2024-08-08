@@ -22,7 +22,7 @@ spec:
       - name: toeicdoit-gateway
         image: 6whistle/gateway:latest
         ports:
-        - containerPort: 8000
+        - containerPort: 80
       - name: toeicdoit-user
         image: 6whistle/user:latest
         ports:

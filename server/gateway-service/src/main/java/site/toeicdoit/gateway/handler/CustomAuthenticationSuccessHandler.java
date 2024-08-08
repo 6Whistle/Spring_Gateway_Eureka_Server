@@ -35,7 +35,7 @@ public class CustomAuthenticationSuccessHandler implements ServerAuthenticationS
         log.info("::::::getCredentials 정보: "+authentication.getCredentials());
 
         webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
-        webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("https://toeicdoit.site/login/callback"));
+        webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("https://www.toeicdoit.site/login/callback"));
         webFilterExchange.getExchange().getResponse().getHeaders().add("Content-Type", "application/json");
 
         return webFilterExchange.getExchange().getResponse()
@@ -49,7 +49,7 @@ public class CustomAuthenticationSuccessHandler implements ServerAuthenticationS
                 .add("accessToken", 
                     ResponseCookie.from("accessToken", accessToken)
                     .path("/")
-                    .domain("toeicdoit.site")
+                    .domain(".toeicdoit.site")
                     .maxAge(jwtTokenProvider.getAccessTokenExpired())
                     // .httpOnly(true)
                     .build()

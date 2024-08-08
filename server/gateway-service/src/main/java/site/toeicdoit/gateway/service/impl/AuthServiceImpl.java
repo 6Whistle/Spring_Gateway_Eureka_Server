@@ -89,6 +89,7 @@ public class AuthServiceImpl implements AuthService{
                 .value(accessToken)
                 .maxAge(jwtTokenProvider.getAccessTokenExpired())
                 .path("/")
+                .domain(".toeicdoit.site")
                 // .httpOnly(true)
                 .build()
             )

@@ -1,12 +1,14 @@
 package site.toeicdoit.user.domain.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public record OAuth2UserDto(
-        String id,
-        String name,
-        String email,
-        String profile
-) {}
+public class OAuth2UserDto{
+    private String id;
+    private String name;
+    private String email;
+    private String profile;
+}

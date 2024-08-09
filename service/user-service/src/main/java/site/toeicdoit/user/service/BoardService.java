@@ -4,9 +4,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import site.toeicdoit.user.domain.dto.BoardDto;
 import site.toeicdoit.user.domain.dto.ReplyDto;
-import site.toeicdoit.user.domain.model.mysql.BoardModel;
-import site.toeicdoit.user.domain.model.mysql.ReplyModel;
-import site.toeicdoit.user.domain.model.mysql.UserModel;
+import site.toeicdoit.user.domain.model.BoardModel;
+import site.toeicdoit.user.domain.model.ReplyModel;
+import site.toeicdoit.user.domain.model.UserModel;
 
 public interface BoardService extends CommandService<BoardDto>, QueryService<BoardDto> {
 
@@ -30,8 +30,8 @@ public interface BoardService extends CommandService<BoardDto>, QueryService<Boa
                 .type(entity.getType())
                 .category(entity.getCategory())
                 .replyIds(entity.getReplyIds() != null ? entity.getReplyIds().stream().map(this::replyToDto).toList() : null)
-                .createdAt(entity.getCreatedAt().toString())
-                .updatedAt(entity.getUpdatedAt().toString())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
                 .build();
     }
 
@@ -43,8 +43,8 @@ public interface BoardService extends CommandService<BoardDto>, QueryService<Boa
                 .userId(model.getUserId().getId())
                 .boardId(model.getBoardId().getId())
                 .build();
-
     }
 
     Page<BoardDto> findBy(String title, String type, String category, Long userId, Pageable pageable);
+    BoardDto modify(BoardDto dto);
 }

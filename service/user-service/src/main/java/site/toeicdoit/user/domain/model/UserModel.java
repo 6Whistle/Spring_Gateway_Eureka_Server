@@ -1,4 +1,4 @@
-package site.toeicdoit.user.domain.model.mysql;
+package site.toeicdoit.user.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,7 +29,7 @@ public class UserModel extends BaseModel{
     private String name;
 
     private String phone;
-    private Integer toeicLevel;
+    private String toeicLevel;
     private String registration;
     private String oauthId;
 

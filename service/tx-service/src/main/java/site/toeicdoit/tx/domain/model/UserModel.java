@@ -30,7 +30,7 @@ public class UserModel extends BaseModel{
     private String name;
 
     private String phone;
-    private Integer toeicLevel;
+    private String toeicLevel;
     private String registration;
     private String oauthId;
 

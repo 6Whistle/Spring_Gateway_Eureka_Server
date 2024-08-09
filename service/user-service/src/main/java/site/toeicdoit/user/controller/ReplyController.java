@@ -1,13 +1,15 @@
 package site.toeicdoit.user.controller;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.toeicdoit.user.domain.dto.ReplyDto;
-import site.toeicdoit.user.domain.vo.MessageStatus;
 import site.toeicdoit.user.domain.vo.Messenger;
 import site.toeicdoit.user.service.ReplyService;
+
+import java.util.List;
 
 @RequestMapping(path = "/api/reply")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -20,52 +22,27 @@ public class ReplyController {
 
     @PostMapping("/save")
     public ResponseEntity<Messenger> save(@RequestBody ReplyDto dto) {
-        return ResponseEntity.ok(
-                Messenger.builder()
-                        .message("reply save : "+MessageStatus.SUCCESS.name())
-                        .state(Boolean.TRUE)
-                        .data(replyService.save(dto))
-                        .build());
+        return ResponseEntity.ok(replyService.save(dto));
     }
 
     @PutMapping("/modify-by-content")
-    public ResponseEntity<Messenger> modifyByContent(@RequestBody ReplyDto dto) {
-        return ResponseEntity.ok(
-                Messenger.builder()
-                        .message("reply save : "+MessageStatus.SUCCESS.name())
-                        .state(Boolean.TRUE)
-                        .data(replyService.modifyByContent(dto))
-                        .build());
+    public ResponseEntity<Messenger> modify(@RequestBody ReplyDto dto) {
+        return ResponseEntity.ok(replyService.modify(dto));
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Messenger> deleteById(@RequestParam("id") Long id) {
-        replyService.deleteById(id);
-        return ResponseEntity.ok(
-                Messenger.builder()
-                        .message("reply save : "+MessageStatus.SUCCESS.name())
-                        .state(Boolean.TRUE)
-                        .build()
-        );
+        return ResponseEntity.ok(replyService.deleteById(id));
     }
 
     @GetMapping("/find-all-by-boardId")
-    public ResponseEntity<Messenger> findAllByBoardId(@RequestParam("boardId") Long boardId) {
-        return ResponseEntity.ok(
-                Messenger.builder()
-                        .message("reply save : "+MessageStatus.SUCCESS.name())
-                        .state(Boolean.TRUE)
-                        .data(replyService.findAllByBoardId(boardId))
-                        .build());
+    public ResponseEntity<List<ReplyDto>> findAllByBoardId(@RequestParam("boardId") Long boardId) {
+        return ResponseEntity.ok(replyService.findAllByBoardId(boardId));
     }
 
     @GetMapping("/find-all-by-userId")
-    public ResponseEntity<Messenger> findAllByUserId(@RequestParam("userId") Long userId) {
-        return ResponseEntity.ok(
-                Messenger.builder()
-                        .message("reply save : "+MessageStatus.SUCCESS.name())
-                        .state(Boolean.TRUE)
-                        .data(replyService.findAllByUserId(userId))
-                        .build());
+    public ResponseEntity<List<ReplyDto>> findAllByUserId(@RequestParam("userId") Long userId) {
+        return ResponseEntity.ok(replyService.findAllByUserId(userId));
     }
+
 }

@@ -3,6 +3,7 @@ package site.toeicdoit.user.domain.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import site.toeicdoit.user.domain.model.mysql.CalendarModel;
 import site.toeicdoit.user.domain.vo.Role;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +20,7 @@ public class UserDto {
     private String name;
     private String profile;
     private String phone;
-    private String toeicLevel;
+    private Integer toeicLevel;
     private String registration;
     private List<Role> roles;
     private String oauthId;

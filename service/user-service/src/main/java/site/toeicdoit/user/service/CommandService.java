@@ -1,6 +1,10 @@
 package site.toeicdoit.user.service;
 
+import site.toeicdoit.user.domain.vo.Messenger;
+
 public interface CommandService<T> {
-    T save(T t);
-    void deleteById(Long id);
+    Messenger save(T t);
+    Messenger deleteById(Long id);
+    Messenger modify(T t);
+    Messenger countAll();
 }

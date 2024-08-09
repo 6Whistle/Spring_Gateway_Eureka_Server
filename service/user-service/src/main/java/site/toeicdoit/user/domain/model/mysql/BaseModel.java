@@ -1,4 +1,4 @@
-package site.toeicdoit.user.domain.model;
+package site.toeicdoit.user.domain.model.mysql;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

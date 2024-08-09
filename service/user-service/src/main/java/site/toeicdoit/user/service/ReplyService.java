@@ -1,13 +1,13 @@
 package site.toeicdoit.user.service;
 
 import site.toeicdoit.user.domain.dto.ReplyDto;
-import site.toeicdoit.user.domain.model.BoardModel;
-import site.toeicdoit.user.domain.model.ReplyModel;
-import site.toeicdoit.user.domain.model.UserModel;
+import site.toeicdoit.user.domain.model.mysql.BoardModel;
+import site.toeicdoit.user.domain.model.mysql.ReplyModel;
+import site.toeicdoit.user.domain.model.mysql.UserModel;
 
 import java.util.List;
 
-public interface ReplyService extends CommandService<ReplyDto>, QueryService<ReplyDto> {
+public interface ReplyService extends CommandService<ReplyDto> {
 
     default ReplyModel dtoToEntity(ReplyDto dto) {
         return ReplyModel.builder()
@@ -24,13 +24,11 @@ public interface ReplyService extends CommandService<ReplyDto>, QueryService<Rep
                 .writerName(model.getUserId().getName())
                 .userId(model.getUserId().getId())
                 .boardId(model.getBoardId().getId())
-                .boardTitle(model.getBoardId().getTitle())
                 .createdAt(model.getCreatedAt())
                 .updatedAt(model.getUpdatedAt())
                 .build();
     }
 
-    ReplyDto modifyByContent(ReplyDto replyDto);
     List<ReplyDto> findAllByBoardId(Long boardId);
     List<ReplyDto> findAllByUserId(Long userId);
 }

@@ -16,7 +16,7 @@ public class CustomAuthenicationFailureHandler implements ServerAuthenticationFa
     @Override
     public Mono<Void> onAuthenticationFailure(WebFilterExchange webFilterExchange, AuthenticationException exception) {
         webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
-        webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("https://www.toeicdoit.site/login/callback"));
+        webFilterExchange.getExchange().getResponse().getHeaders().setLocation(URI.create("http://localhost:3000/login/callback"));
         webFilterExchange.getExchange().getResponse().getHeaders().add("Content-Type", "application/json");
         return webFilterExchange.getExchange().getResponse().setComplete();
 

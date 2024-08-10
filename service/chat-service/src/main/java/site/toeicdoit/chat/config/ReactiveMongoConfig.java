@@ -41,18 +41,18 @@ public class ReactiveMongoConfig {
      */
     @Bean
     public CommandLineRunner mongodbInit() {
-        mongoTemplate.getCollectionNames()
-        .flatMap(collectionName -> mongoTemplate.dropCollection(collectionName))
-        .collectList()
-        .flatMap(i -> mongoTemplate.insert(RoomFluxModel.builder()
-            .title("test room")
-            .roomCategories(List.of(RoomCategory.ETC))
-            .adminIds(List.of("admin"))
-            .memberIds(List.of("admin"))
-            .build()
-        ))
-        .doOnNext(i -> log.info("{}", i.toString()))
-        .subscribe();
+        // mongoTemplate.getCollectionNames()
+        // .flatMap(collectionName -> mongoTemplate.dropCollection(collectionName))
+        // .collectList()
+        // .flatMap(i -> mongoTemplate.insert(RoomFluxModel.builder()
+        //     .title("test room")
+        //     .roomCategories(List.of(RoomCategory.ETC))
+        //     .adminIds(List.of("admin"))
+        //     .memberIds(List.of("admin"))
+        //     .build()
+        // ))
+        // .doOnNext(i -> log.info("{}", i.toString()))
+        // .subscribe();
 
         return args -> {
             System.out.println("MongoDB Initiated!");

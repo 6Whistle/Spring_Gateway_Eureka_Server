@@ -29,7 +29,7 @@ public class AuthController {
                 .build());
     }
 
-    @GetMapping("/exist-by-email")
+    @GetMapping("/join/exist-by-email")
     public ResponseEntity<Messenger> existByEmail(@RequestParam("email") String email) {
         return ResponseEntity.ok(Messenger
                 .builder()

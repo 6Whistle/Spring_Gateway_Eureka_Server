@@ -28,5 +28,21 @@ public class ResultDto {
     private String createdAt;
     private String updatedAt;
 
-    private List<ResultDto> resultDtoList;
+    private List<ResultDataDto> data;
+
+    @Builder
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ResultDataDto {
+        private Long toeicId;
+        private String answer;
+        private Integer part; // part 필드 추가
+
+        @Override
+        public String toString() {
+            return String.format("(toeicId=%d, answer=%s, part=%d)", toeicId, answer, part);
+        }
+    }
+
 }

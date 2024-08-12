@@ -1,19 +1,15 @@
 package site.toeicdoit.toeic.controller;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import site.toeicdoit.toeic.domain.dto.ResultDto;
 import site.toeicdoit.toeic.domain.model.mysql.ToeicCategoryModel;
 import site.toeicdoit.toeic.domain.vo.Messenger;
-import site.toeicdoit.toeic.service.Impl.ResultServiceImpl;
-import site.toeicdoit.toeic.service.Impl.ToeicServiceImpl;
+import site.toeicdoit.toeic.service.ResultService;
+import site.toeicdoit.toeic.service.ToeicCategoryService;
+import site.toeicdoit.toeic.service.ToeicService;
 
 import java.util.List;
 
@@ -24,35 +20,28 @@ import java.util.List;
 @RestController
 public class ToeicController {
 
-    private final ToeicServiceImpl toeicService;
-    private final ResultServiceImpl resultService;
+    private final ToeicCategoryService toeicCategoryService;
+    private final ResultService resultService;
+    private final ToeicService toeicService;
 
     @GetMapping("/exam")
-    public List<ToeicCategoryModel> getAllToeicCategory() {
-        return toeicService.getAllToeicCategory();
+    public List<ToeicCategoryModel> getAllToeicCategoryByExam() {
+        return toeicCategoryService.findAllByExam();
     }
 
     @GetMapping("/test")
     public List<ToeicCategoryModel> getAllToeicCategoryByTest() {
-        return toeicService.getAllToeicCategoryByTest();
+        return toeicCategoryService.findAllByTest();
     }
 
     @GetMapping("/level/{level}")
     public List<ToeicCategoryModel> findByLevel(@PathVariable Long level) {
-        return toeicService.findByLevel(level);
+        return toeicCategoryService.findAllByLevel(level);
     }
 
     @GetMapping("/part/{part}")
     public List<ToeicCategoryModel> findByPart(@PathVariable String part) {
-        return toeicService.findByPart(part);
-    }
-
-    @GetMapping("/exam/title")
-    public Page<String> findTitleByExam(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return toeicService.findTitleByExam(pageable);
+        return toeicCategoryService.findAllByPart(part);
     }
 
     @PostMapping("/exam/save")
@@ -60,5 +49,4 @@ public class ToeicController {
         Messenger response = resultService.save(resultDto);
         return ResponseEntity.ok(response);
     }
-
 }

@@ -57,4 +57,9 @@ public class UserModel extends BaseModel{
     private List<CalendarModel> calendarIds;
 
 
+    // ======================= toeic =======================
+
+    @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY)
+    private List<ResultModel> resultIds;
+
 }

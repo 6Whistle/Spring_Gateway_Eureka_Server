@@ -26,7 +26,6 @@ public class ToeicModel extends BaseModel {
     private String answer;
     private String description;
     private String image; //문제 이미지
-    private boolean take; // 사용자가 풀었는지 여부
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,6 +34,5 @@ public class ToeicModel extends BaseModel {
     private ToeicCategoryModel toeicCategoryId;
 
     @OneToOne(mappedBy = "toeicId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private OptionModel optionId;
 }

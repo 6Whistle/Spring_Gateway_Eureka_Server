@@ -47,6 +47,6 @@ public interface UserService extends CommandService<UserDto>, QueryService<UserD
     UserDto findByEmail(String email);
     Boolean modifyByPassword(String email, String oldPassword, String newPassword);
     UserDto modifyByNameAndPhone(UserDto dto);
-    Map<Long, List<String>> findByNameAndProfile(Map<String, List<Long>> ids);
+    List<UserNameProfileDto> findByNameAndProfile(Map<String, List<Long>> ids);
     UserDto modifyByKeyword(Long id, String keyword, String info);
 }

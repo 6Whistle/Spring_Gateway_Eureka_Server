@@ -18,11 +18,13 @@ public class ToeicCategoryDto {
     private String title;
     private String sound;
     private String testType;
-
+    private boolean take;
 
     private String createdAt;
     private String updatedAt;
 
     private List<ToeicCategoryDto> toeicQuestions;
+
+
 
 }

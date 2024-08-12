@@ -1,5 +1,6 @@
 package site.toeicdoit.toeic.domain.model.mysql;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,10 +21,14 @@ public class ToeicCategoryModel extends BaseModel {
     private String title; //기출제목
     private String sound; //기출음성
     private String testType; //기출 유형
+    private boolean take; // 사용자가 풀었는지 여부
 
     @OneToMany(mappedBy = "toeicCategoryId", fetch = FetchType.LAZY)
     private List<ToeicModel> toeicIds;
 
     @OneToOne(mappedBy = "toeicCategoryId", fetch = FetchType.LAZY)
     private ResultModel resultId;
+
+
+
 }

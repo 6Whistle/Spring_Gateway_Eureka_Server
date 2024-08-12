@@ -18,12 +18,11 @@ public class ToeicModel extends BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long level;
-    private String part; // 문제 유형
+    private String part;
     private String question;
     private String answer;
     private String description;
-    private String image; //문제 이미지
-    private boolean take; // 사용자가 풀었는지 여부
+    private String image;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,6 +31,5 @@ public class ToeicModel extends BaseModel {
     private ToeicCategoryModel toeicCategoryId;
 
     @OneToOne(mappedBy = "toeicId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private OptionModel optionId;
 }

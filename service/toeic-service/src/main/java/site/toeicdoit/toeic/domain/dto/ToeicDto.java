@@ -19,7 +19,6 @@ public class ToeicDto {
     private String answer;
     private String description;
     private String image;
-    private boolean take;
 
     private String createdAt;
     private String updatedAt;

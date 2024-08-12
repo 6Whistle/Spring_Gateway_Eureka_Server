@@ -31,7 +31,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public BoardDto save(BoardDto dto) {
-        if (!dto.getTitle().isEmpty() || !dto.getContent().isEmpty()) {
+        if (!dto.getTitle().isEmpty() && !dto.getContent().isEmpty()) {
             Long id = boardRepository.save(dtoToEntity(dto)).getId();
             return findById(id);
         } else {

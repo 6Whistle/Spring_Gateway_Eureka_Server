@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import site.toeicdoit.user.domain.dto.LoginResultDto;
 import site.toeicdoit.user.domain.dto.OAuth2UserDto;
 import site.toeicdoit.user.domain.dto.UserDto;
+import site.toeicdoit.user.domain.dto.UserNameProfileDto;
 import site.toeicdoit.user.domain.model.QUserModel;
 import site.toeicdoit.user.domain.model.RoleModel;
 import site.toeicdoit.user.domain.model.UserModel;
@@ -228,26 +229,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<Long, List<String>> findByNameAndProfile(Map<String, List<Long>> ids) {
-        if (ids.values().isEmpty()) {
-            throw new UserException(ExceptionStatus.INVALID_INPUT, "param is empty");
-        } else {
-            Map<Long, List<String>> userMap = new HashMap<>();
-            for (List<Long> list : ids.values()) {
-                for (Long id : list) {
-                    UserDto user = findById(id);
-                    userMap.put(user.getId(), List.of(user.getName(), user.getProfile() == null ? "" : user.getProfile()));
-                }
+    public List<UserNameProfileDto> findByNameAndProfile(Map<String, List<Long>> ids) {
+        List<UserNameProfileDto> userList = new ArrayList<>();
+        for (List<Long> list : ids.values()) {
+            for (Long id : list) {
+                UserDto user = findById(id);
+                userList.add(UserNameProfileDto.builder().userId(user.getId().toString())
+                        .name(user.getName())
+                        .profile(user.getProfile() == null ? "" : user.getProfile())
+                        .build());
             }
-            return userMap;
         }
+        return userList;
     }
 
 
     @Override
     @Transactional
     public UserDto modifyByKeyword(Long id, String keyword, String info) {
-        if (id == null || keyword.isEmpty() || info.isEmpty()){
+        if (id == null || keyword.isEmpty() && info.isEmpty()){
             throw new UserException(ExceptionStatus.INVALID_INPUT, "id or keyword cannot be empty");
         } else if (existById(id)) {
             StringPath updateSet = switch (keyword) {

@@ -18,9 +18,9 @@ public class ToeicCategoryModel extends BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private Boolean take;
-    private String sound; //기출음성
-    private String testType; //기출 유형
+    private String sound;
+    private String testType;
+    private boolean take;
 
     @OneToMany(mappedBy = "toeicCategoryId", fetch = FetchType.LAZY)
     private List<ToeicModel> toeicIds;

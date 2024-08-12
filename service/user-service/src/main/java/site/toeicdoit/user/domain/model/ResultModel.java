@@ -35,4 +35,8 @@ public class ResultModel extends BaseModel {
     @OneToMany(mappedBy = "parentId", orphanRemoval = true)
     private List<ResultModel> childrenIds;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserModel userId;
+
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -11,11 +12,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import site.toeicdoit.chat.domain.dto.AccessRoomDTO;
 import site.toeicdoit.chat.domain.dto.RoomDTO;
+import site.toeicdoit.chat.domain.model.ChatFluxModel;
 import site.toeicdoit.chat.domain.model.RoomFluxModel;
 import site.toeicdoit.chat.domain.vo.ExceptionStatus;
 import site.toeicdoit.chat.domain.vo.RoomCategory;
 import site.toeicdoit.chat.exception.ChatException;
 import site.toeicdoit.chat.repository.RoomRepository;
+import site.toeicdoit.chat.service.CommandService;
+import site.toeicdoit.chat.service.QueryService;
 import site.toeicdoit.chat.service.RoomService;
 
 /**
@@ -30,6 +34,7 @@ import site.toeicdoit.chat.service.RoomService;
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
+    private final ReactiveKafkaProducerTemplate<String, ChatFluxModel> reactiveKafkaProducerTemplate;
 
     /**
      * Create Chatting Room
@@ -51,7 +56,7 @@ public class RoomServiceImpl implements RoomService {
             RoomFluxModel.builder()
                 .title(roomDTO.getTitle())
                 .adminIds(roomDTO.getAdminIds())
-                .memberIds(roomDTO.getAdminIds())
+                .memberIds(List.of())
                 .roomCategories(
                     roomDTO.getRoomCategories() != null 
                     ? roomDTO.getRoomCategories().stream().map(RoomCategory::toRoomCategory).distinct().toList()
@@ -205,6 +210,17 @@ public class RoomServiceImpl implements RoomService {
         .doOnNext(roomModel -> roomModel.setMemberIds(Stream.of(roomModel.getMemberIds(), List.of(dto.getUserId())).flatMap(List::stream).distinct().toList()))
         .flatMap(roomRepository::save)
         .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_UPDATE_ERROR, "Failed to enter room"))
+        .doOnNext(roomModel -> reactiveKafkaProducerTemplate.send(
+                roomModel.getId(), 
+                ChatFluxModel.builder()
+                .id("0")
+                .roomId(roomModel.getId())
+                .senderId("0")
+                .senderName("SYSTEM")
+                .message(String.valueOf(roomModel.getMemberIds().size()))
+                .build()
+            ).subscribe()
+        )
         ;
     }
 
@@ -227,6 +243,17 @@ public class RoomServiceImpl implements RoomService {
         .doOnNext(roomModel -> roomModel.setMemberIds(roomModel.getMemberIds().stream().filter(id -> !id.equals(dto.getUserId())).toList()))
         .flatMap(roomRepository::save)
         .onErrorMap(e -> ChatException.toChatException(e, ExceptionStatus.MONGODB_FIND_ERROR, "Failed to find room"))
+        .doOnNext(roomModel -> reactiveKafkaProducerTemplate.send(
+            roomModel.getId(), 
+            ChatFluxModel.builder()
+                .id("0")
+                .roomId(roomModel.getId())
+                .senderId("0")
+                .senderName("SYSTEM")
+                .message(String.valueOf(roomModel.getMemberIds().size()))
+                .build()
+            ).subscribe()
+        )
         ;
     }
 }

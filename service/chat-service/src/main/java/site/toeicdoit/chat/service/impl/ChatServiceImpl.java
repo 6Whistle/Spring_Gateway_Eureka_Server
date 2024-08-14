@@ -57,7 +57,18 @@ public class ChatServiceImpl implements ChatService {
         .concatMap(r -> r)
         .doOnNext(i -> log.info("Received key={}, value={}, topic={}, offset={}", i.key(), i.value(), i.topic(), i.offset()))
         .flatMap(record -> Mono.just(this.toDTO(record.value())))
-        .mergeWith(Flux.interval(java.time.Duration.ofSeconds(30)).map(i -> ChatDTO.builder().roomId(roomId).id("0").build()))
+        .mergeWith(Flux.interval(java.time.Duration.ofSeconds(30))
+            .flatMap(i -> roomRepository.findById(roomId))
+            .flatMap(roomModel -> Mono.just(
+                ChatDTO.builder()
+                .id("0").
+                roomId(roomId)
+                .senderId("0")
+                .senderName("SYSTEM")
+                .message(String.valueOf(roomModel.getMemberIds().size()))
+                .build())
+            )
+        )
         .flatMap(dto -> Mono.just(ServerSentEvent.builder(dto).build()))
         .onErrorMap(Exception.class, e -> ChatException.toChatException(e, ExceptionStatus.KAFKA_RECEIVE_ERROR, "Kafka receive error"))
         ;

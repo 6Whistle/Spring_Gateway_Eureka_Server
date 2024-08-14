@@ -1,5 +1,7 @@
 package site.toeicdoit.chat.service;
 
+import java.util.List;
+
 import reactor.core.publisher.Mono;
 import site.toeicdoit.chat.domain.dto.AccessRoomDTO;
 import site.toeicdoit.chat.domain.dto.RoomDTO;
@@ -30,8 +32,8 @@ public interface RoomService extends CommandService<RoomFluxModel, RoomDTO>, Que
         .id(model.getId())
         .title(model.getTitle())
         .roomCategories(model.getRoomCategories().stream().map(c -> c.name().toLowerCase()).toList())
-        .adminIds(model.getAdminIds())
-        .memberIds(model.getMemberIds())
+        .adminIds(model.getAdminIds() == null ? List.of() : model.getAdminIds())
+        .memberIds(model.getMemberIds() == null ? List.of() : model.getMemberIds())
         .createdAt(model.getCreatedAt())
         .updatedAt(model.getUpdatedAt())
         .build();

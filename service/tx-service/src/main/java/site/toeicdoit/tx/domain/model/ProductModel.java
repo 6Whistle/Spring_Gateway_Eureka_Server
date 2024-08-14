@@ -26,7 +26,7 @@ public class ProductModel extends BaseModel {
     @Setter
     private Integer duration;
 
-    @OneToMany(mappedBy = "productId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "productId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentModel> paymentIds;
 
 

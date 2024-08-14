@@ -8,7 +8,9 @@ import site.toeicdoit.user.domain.dto.ReplyDto;
 import site.toeicdoit.user.domain.model.QReplyModel;
 import site.toeicdoit.user.domain.vo.ExceptionStatus;
 import site.toeicdoit.user.exception.UserException;
+import site.toeicdoit.user.repository.BoardRepository;
 import site.toeicdoit.user.repository.ReplyRepository;
+import site.toeicdoit.user.repository.UserRepository;
 import site.toeicdoit.user.service.ReplyService;
 import java.util.List;
 
@@ -16,6 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReplyServiceImpl implements ReplyService {
     private final ReplyRepository replyRepository;
+    private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
     private final JPAQueryFactory queryFactory;
     private final QReplyModel qReply = QReplyModel.replyModel;
 
@@ -58,25 +62,25 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     public List<ReplyDto> findAllByBoardId(Long boardId) {
-        if (existById(boardId)) {
+        if (boardRepository.existsById(boardId)) {
             return queryFactory.selectFrom(qReply)
                     .where(qReply.boardId.id.eq(boardId))
                     .orderBy(qReply.id.desc())
                     .fetch().stream().map(this::entityToDto).toList();
         } else {
-            throw new UserException(ExceptionStatus.NOT_FOUND, "id not found");
+            throw new UserException(ExceptionStatus.NOT_FOUND, "boardId not found");
         }
     }
 
     @Override
     public List<ReplyDto> findAllByUserId(Long userId) {
-        if (existById(userId)) {
+        if (userRepository.existsById(userId)) {
             return queryFactory.selectFrom(qReply)
                     .where(qReply.userId.id.eq(userId))
                     .orderBy(qReply.id.desc())
                     .fetch().stream().map(this::entityToDto).toList();
         } else {
-            throw new UserException(ExceptionStatus.NOT_FOUND, "id not found");
+            throw new UserException(ExceptionStatus.NOT_FOUND, "userId not found");
         }
     }
 

@@ -27,7 +27,7 @@ public class SubscribeModel extends BaseModel {
     @JoinColumn(name = "user_id")
     private UserModel userId;
 
-    @OneToMany(mappedBy = "subscribeId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "subscribeId", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentModel> paymentIds;
 
 }

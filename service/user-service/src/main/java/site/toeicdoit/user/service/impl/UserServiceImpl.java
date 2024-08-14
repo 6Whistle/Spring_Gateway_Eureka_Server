@@ -72,8 +72,6 @@ public class UserServiceImpl implements UserService {
         } else {
             UserModel user = userRepository.findByEmail(dto.getEmail())
                     .stream()
-                    .peek(i -> i.setName(dto.getName()))
-                    .peek(i -> i.setProfile(dto.getProfile()))
                     .findAny()
                     .orElseGet(() -> UserModel.builder()
                             .email(dto.getEmail())

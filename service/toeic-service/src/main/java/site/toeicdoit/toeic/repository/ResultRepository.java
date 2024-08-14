@@ -5,9 +5,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import site.toeicdoit.toeic.domain.model.mysql.ResultModel;
-import site.toeicdoit.toeic.domain.model.mysql.ToeicCategoryModel;
-import site.toeicdoit.toeic.domain.model.mysql.UserModel;
 
+
+import java.util.List;
 import java.util.Optional;
 
 
@@ -15,11 +15,10 @@ import java.util.Optional;
 public interface ResultRepository extends JpaRepository<ResultModel, Long> {
 
 
-//    @Query("SELECT r FROM ResultModel r WHERE r.userId = :userId AND r.toeicCategoryId = :toeicCategoryId AND r.userAnswer = :userAnswer")
-//    ResultModel findByUserIdAndToeicCategoryIdAndUserAnswer(@Param("userId") UserModel userId,
-//                                                            @Param("toeicCategoryId") ToeicCategoryModel toeicCategoryId,
-//                                                            @Param("userAnswer") String userAnswer);
+    Optional<ResultModel> findByUserId_IdAndToeicCategoryId_IdAndId(Long userId, Long toeicCategoryId, Long id);
 
-    Optional<ResultModel> findByUserIdAndToeicCategoryIdAndUserAnswer(UserModel userModel, ToeicCategoryModel toeicCategoryModel, String userAnswer);
+    @Query("select rm from ResultModel rm where rm.userId.id = :userId ")
+    List<ResultModel> findByResultId(@Param("userId") Long userId);
+
 
 }

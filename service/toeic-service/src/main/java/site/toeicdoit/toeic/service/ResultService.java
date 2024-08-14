@@ -16,31 +16,42 @@ public interface ResultService extends QueryService<ResultDto>, CommandService<R
                 .collect(Collectors.joining(", ")); // 구분자로 ", " 사용
 
         return ResultModel.builder()
-                .id(dto.getId())
+
                 .timeElapsed(dto.getTimeElapsed())
                 .score(dto.getScore())
                 .rcScore(dto.getRcScore())
                 .lcScore(dto.getLcScore())
+                .scorePart1(dto.getScorePart1())
+                .scorePart2(dto.getScorePart2())
+                .scorePart3(dto.getScorePart3())
+                .scorePart4(dto.getScorePart4())
+                .scorePart5(dto.getScorePart5())
+                .scorePart6(dto.getScorePart6())
+                .scorePart7(dto.getScorePart7())
                 .userAnswer(formattedUserAnswer) // 변환된 문자열 저장
                 .build();
     }
 
-    // 엔티티를 DTO로 변환하는 메소드
     default ResultDto entityToDto(ResultModel entity) {
         return ResultDto.builder()
                 .id(entity.getId())
                 .score(entity.getScore())
                 .rcScore(entity.getRcScore())
                 .lcScore(entity.getLcScore())
+                .scorePart1(entity.getScorePart1())
+                .scorePart2(entity.getScorePart2())
+                .scorePart3(entity.getScorePart3())
+                .scorePart4(entity.getScorePart4())
+                .scorePart5(entity.getScorePart5())
+                .scorePart6(entity.getScorePart6())
+                .scorePart7(entity.getScorePart7())
                 .timeElapsed(entity.getTimeElapsed())
                 .userAnswer(entity.getUserAnswer())
                 .toeicCategoryId(entity.getToeicCategoryId() != null ? entity.getToeicCategoryId().getId() : null)
-                .data(entity.getChildrenIds().stream()
-                        .map(child -> ResultDto.ResultDataDto.builder()
-                                .toeicId(child.getId())
-                                .answer(child.getUserAnswer())
-                                .build())
-                        .collect(Collectors.toList()))
+                .userId(entity.getUserId() != null ? entity.getUserId().getId() : null)
+                .barData(List.of(entity.getScorePart1(), entity.getScorePart2(), entity.getScorePart3(), entity.getScorePart4(), entity.getScorePart5(), entity.getScorePart6(), entity.getScorePart7()))
+//                .createdAt(entity.getCreatedAt().toString())
+//                .updatedAt(entity.getUpdatedAt().toString())
                 .build();
     }
 
@@ -59,4 +70,8 @@ public interface ResultService extends QueryService<ResultDto>, CommandService<R
     Optional<ResultDto> findById(Long id);
 
     Boolean existsById(Long id);
+
+    Messenger saveChunk(String jsonData, int chunkIndex, int totalChunks);
+
+    List<ResultDto> findByUserId(Long userId);
 }

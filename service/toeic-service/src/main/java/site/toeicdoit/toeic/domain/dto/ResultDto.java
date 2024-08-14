@@ -24,11 +24,21 @@ public class ResultDto {
     private String score;
     private String lcScore;
     private String rcScore;
+    private String scorePart1;
+    private String scorePart2;
+    private String scorePart3;
+    private String scorePart4;
+    private String scorePart5;
+    private String scorePart6;
+    private String scorePart7;
 
     private String createdAt;
     private String updatedAt;
 
+
+
     private List<ResultDataDto> data;
+    private List<?> barData;
 
     @Builder
     @Data

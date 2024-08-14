@@ -1,6 +1,5 @@
 package site.toeicdoit.toeic.domain.model.mysql;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,8 +25,8 @@ public class ToeicCategoryModel extends BaseModel {
     @OneToMany(mappedBy = "toeicCategoryId", fetch = FetchType.LAZY)
     private List<ToeicModel> toeicIds;
 
-    @OneToOne(mappedBy = "toeicCategoryId", fetch = FetchType.LAZY)
-    private ResultModel resultId;
+    @OneToMany(mappedBy = "toeicCategoryId", fetch = FetchType.LAZY,cascade =  CascadeType.ALL, orphanRemoval = true)
+    private List<ResultModel> resultIds;
 
 
 

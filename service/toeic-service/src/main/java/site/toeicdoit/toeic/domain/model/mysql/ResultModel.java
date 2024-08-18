@@ -13,23 +13,24 @@ import java.util.List;
 @Entity
 @ToString(exclude = {"id"})
 public class ResultModel extends BaseModel {
+
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userAnswer;
-    private boolean isCorrect; //정답유무
-    private String timeElapsed; //풀이시간
-    private String score; //점수
-    private String lcScore; //lc점수
-    private String rcScore; //rc점수
-    private String scorePart1; //part1점수
-    private String scorePart2; //part2점수
-    private String scorePart3; //part3점수
-    private String scorePart4; //part4점수
-    private String scorePart5; //part5점수
-    private String scorePart6; //part6점수
-    private String scorePart7; //part7점수
+    private boolean isCorrect;
+    private String timeElapsed;
+    private String score;
+    private String lcScore;
+    private String rcScore;
+    private String scorePart1;
+    private String scorePart2;
+    private String scorePart3;
+    private String scorePart4;
+    private String scorePart5;
+    private String scorePart6;
+    private String scorePart7;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

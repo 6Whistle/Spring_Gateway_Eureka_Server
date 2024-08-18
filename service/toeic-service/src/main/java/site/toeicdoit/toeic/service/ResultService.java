@@ -3,7 +3,6 @@ package site.toeicdoit.toeic.service;
 import site.toeicdoit.toeic.domain.dto.ResultDto;
 import site.toeicdoit.toeic.domain.model.mysql.ResultModel;
 import site.toeicdoit.toeic.domain.vo.Messenger;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,11 +11,12 @@ public interface ResultService extends QueryService<ResultDto>, CommandService<R
 
     default ResultModel dtoToEntity(ResultDto dto) {
         String formattedUserAnswer = dto.getData().stream()
-                .map(ResultDto.ResultDataDto::toString) // toString()을 사용하여 형식화
-                .collect(Collectors.joining(", ")); // 구분자로 ", " 사용
+                .map(ResultDto.ResultDataDto::toString)
+                .collect(Collectors.joining(", "));
+
 
         return ResultModel.builder()
-
+                .id(dto.getId())
                 .timeElapsed(dto.getTimeElapsed())
                 .score(dto.getScore())
                 .rcScore(dto.getRcScore())
@@ -28,8 +28,10 @@ public interface ResultService extends QueryService<ResultDto>, CommandService<R
                 .scorePart5(dto.getScorePart5())
                 .scorePart6(dto.getScorePart6())
                 .scorePart7(dto.getScorePart7())
-                .userAnswer(formattedUserAnswer) // 변환된 문자열 저장
+                .userAnswer(formattedUserAnswer)
+
                 .build();
+
     }
 
     default ResultDto entityToDto(ResultModel entity) {
@@ -46,20 +48,30 @@ public interface ResultService extends QueryService<ResultDto>, CommandService<R
                 .scorePart6(entity.getScorePart6())
                 .scorePart7(entity.getScorePart7())
                 .timeElapsed(entity.getTimeElapsed())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
                 .userAnswer(entity.getUserAnswer())
+                .take(entity.getToeicCategoryId().isTake())
                 .toeicCategoryId(entity.getToeicCategoryId() != null ? entity.getToeicCategoryId().getId() : null)
                 .userId(entity.getUserId() != null ? entity.getUserId().getId() : null)
-                .barData(List.of(entity.getScorePart1(), entity.getScorePart2(), entity.getScorePart3(), entity.getScorePart4(), entity.getScorePart5(), entity.getScorePart6(), entity.getScorePart7()))
-//                .createdAt(entity.getCreatedAt().toString())
-//                .updatedAt(entity.getUpdatedAt().toString())
+                .barData(List.of(
+                        entity.getScorePart1(),
+                        entity.getScorePart2(),
+                        entity.getScorePart3(),
+                        entity.getScorePart4(),
+                        entity.getScorePart5(),
+                        entity.getScorePart6(),
+                        entity.getScorePart7()
+                ))
                 .build();
     }
 
-    Messenger saveFromJson(String jsonData); // JSON 데이터에서 저장하는 메소드
 
-    Messenger save(ResultDto dto); // ResultDto 저장하는 메소드
+    Messenger saveFromJson(String jsonData);
 
-    Messenger evaluateAndSave(ResultDto resultDto); // 평가 및 저장하는 메소드
+    Messenger save(ResultDto dto);
+
+    Messenger evaluateAndSave(ResultDto resultDto);
 
     Messenger deleteById(Long id);
 
@@ -74,4 +86,10 @@ public interface ResultService extends QueryService<ResultDto>, CommandService<R
     Messenger saveChunk(String jsonData, int chunkIndex, int totalChunks);
 
     List<ResultDto> findByUserId(Long userId);
+
+    List<Object[]> findScoreByUserId(Long userId, Long categoryId);
+
+    Messenger getRecentResults(Long userId);
+
+
 }

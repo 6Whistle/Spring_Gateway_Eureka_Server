@@ -3,6 +3,7 @@ package site.toeicdoit.toeic.domain.dto;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -20,11 +21,8 @@ public class ToeicCategoryDto {
     private String testType;
     private boolean take;
 
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    private List<ToeicCategoryDto> toeicQuestions;
-
-
-
+    private List<ToeicDto> toeicQuestions;
 }

@@ -3,6 +3,8 @@ package site.toeicdoit.toeic.domain.dto;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +20,7 @@ public class OptionDto {
     private String choice3;
     private String choice4;
 
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 }

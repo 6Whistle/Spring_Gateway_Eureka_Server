@@ -1,9 +1,11 @@
-package site.toeicdoit.toeic.service.Impl;
+package site.toeicdoit.toeic.service.impl;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.toeicdoit.toeic.domain.dto.ResultDto;
@@ -18,6 +20,8 @@ import site.toeicdoit.toeic.repository.ToeicRepository;
 import site.toeicdoit.toeic.repository.UserRepository;
 import site.toeicdoit.toeic.service.ResultService;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +47,6 @@ public class ResultServiceImpl implements ResultService {
             this.totalChunks = totalChunks;
 
             if (chunkStorage.size() == totalChunks) {
-                // 모든 청크가 도착했으면 전체 데이터를 재조립하고 저장
                 StringBuilder fullJsonData = new StringBuilder();
                 for (int i = 0; i < totalChunks; i++) {
                     fullJsonData.append(chunkStorage.get(i));
@@ -73,6 +76,54 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
+    public List<Object[]> findScoreByUserId(Long userId, Long categoryId) {
+        return resultRepository.findByUserIdAndToeicCategoryId(userId, categoryId);
+    }
+
+
+    @Override
+    public Messenger getRecentResults(Long userId) {
+        List<Integer> exam = getRecentScores(userId, 1L);
+        List<Integer> level = getRecentScores(userId, 3L);
+        List<Integer> part = getRecentScores(userId, 4L);
+        List<Integer> test = getRecentScores(userId, 2L);
+
+        ResultDto.RecentResultsDto recentResultsDto = ResultDto.RecentResultsDto.builder()
+                .exam(exam)
+                .level(level)
+                .part(part)
+                .test(test)
+                .build();
+
+        ResultDto resultDto = ResultDto.builder()
+                .userId(userId)
+                .recentResults(recentResultsDto)
+                .build();
+
+        return Messenger.builder()
+                .state(true)
+                .message("Recent results retrieved successfully")
+                .data(resultDto)
+                .build();
+    }
+
+    private List<Integer> getRecentScores(Long userId, Long categoryId) {
+        List<ResultModel> results = resultRepository.findByUserIdAndToeicCategoryId(
+                userId, categoryId, PageRequest.of(0, 7, Sort.by(Sort.Direction.DESC, "updatedAt"))
+        );
+
+        return results.stream()
+                .map(result -> {
+                    try {
+                        return Integer.parseInt(result.getScore());
+                    } catch (NumberFormatException e) {
+                        return 0;
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Messenger saveFromJson(String jsonData) {
         try {
             ResultDto resultDto = objectMapper.readValue(jsonData, ResultDto.class);
@@ -95,7 +146,6 @@ public class ResultServiceImpl implements ResultService {
                     .orElseThrow(() -> new RuntimeException("ToeicCategory not found"));
 
             ScoreResult scoreResult = calculateScore(dto.getData());
-
             ResultModel resultModel = dtoToEntity(dto);
             resultModel.setUserId(userModel);
             resultModel.setScorePart1(String.valueOf(scoreResult.part1Score));
@@ -109,19 +159,20 @@ public class ResultServiceImpl implements ResultService {
             resultModel.setScore(String.valueOf(scoreResult.getTotalScore()));
             resultModel.setLcScore(String.valueOf(scoreResult.getLcScore()));
             resultModel.setRcScore(String.valueOf(scoreResult.getRcScore()));
-
-            // user_answer 길이 제한 및 null 체크
+            resultModel.setUpdatedAt(LocalDateTime.now());
             String userAnswer = dto.getUserAnswer();
-            if (userAnswer != null && userAnswer.length() > 255) {
-                userAnswer = userAnswer.substring(0, 255);
+            if (userAnswer != null) {
+                userAnswer = userAnswer.toUpperCase();
+                if (userAnswer.length() > 255) {
+                    userAnswer = userAnswer.substring(0, 255);
+                }
             }
             resultModel.setUserAnswer(userAnswer);
-            Optional<ResultModel> existingResult = resultRepository.findByUserId_IdAndToeicCategoryId_IdAndId(
-                    userModel.getId(), toeicCategoryModel.getId(), resultModel.getId());
-
-
             resultRepository.save(resultModel);
-
+            toeicCategoryModel.setTake(true);
+            toeicCategoryRepository.save(toeicCategoryModel);
+            ResultDto updatedDto = entityToDto(resultModel);
+            updatedDto.setTake(toeicCategoryModel.isTake());
 
             return Messenger.builder()
                     .message("Successfully saved")
@@ -130,7 +181,7 @@ public class ResultServiceImpl implements ResultService {
                     .build();
         } catch (RuntimeException e) {
             log.error("Runtime exception: ", e);
-            throw e; // 트랜잭션이 롤백되도록 명시적으로 예외를 던짐
+            throw e;
         } catch (Exception e) {
             log.error("Error saving ResultDto: ", e);
             return Messenger.builder()
@@ -152,39 +203,54 @@ public class ResultServiceImpl implements ResultService {
         int part6Score = 0;
         int part7Score = 0;
 
-
         for (ResultDto.ResultDataDto data : resultData) {
             Optional<ToeicModel> toeicModel = toeicRepository.findById(data.getToeicId());
-            if (toeicModel.isPresent() && toeicModel.get().getAnswer().equals(data.getAnswer())) {
-                int score = 5; // 점수 계산 로직에 맞게 수정
-                totalScore += score;
-                if (data.getPart() == 1) {
-                    part1Score += score;
-                } else if (data.getPart() == 2) {
-                    part2Score += score;
-                } else if (data.getPart() == 3) {
-                    part3Score += score;
-                } else if (data.getPart() == 4) {
-                    part4Score += score;
-                } else if (data.getPart() == 5) {
-                    part5Score += score;
-                } else if (data.getPart() == 6) {
-                    part6Score += score;
-                } else if (data.getPart() == 7) {
-                    part7Score += score;
+            if (toeicModel.isPresent()) {
+                String correctAnswer = toeicModel.get().getAnswer().toUpperCase();
+                String userAnswer = data.getAnswer().toUpperCase();
 
-                }
+                if (correctAnswer.equals(userAnswer)) {
+                    int score = 5;
+                    totalScore += score;
 
-                if (data.getPart() >= 1 && data.getPart() <= 4) {
-                    lcScore += score;
-                } else if (data.getPart() >= 5 && data.getPart() <= 7) {
-                    rcScore += score;
+                    switch (data.getPart()) {
+                        case 1:
+                            part1Score += score / 5;
+                            lcScore += score;
+                            break;
+                        case 2:
+                            part2Score += score / 5;
+                            lcScore += score;
+                            break;
+                        case 3:
+                            part3Score += score / 5;
+                            lcScore += score;
+                            break;
+                        case 4:
+                            part4Score += score / 5;
+                            lcScore += score;
+                            break;
+                        case 5:
+                            part5Score += score / 5;
+                            rcScore += score;
+                            break;
+                        case 6:
+                            part6Score += score / 5;
+                            rcScore += score;
+                            break;
+                        case 7:
+                            part7Score += score / 5;
+                            rcScore += score;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
-
         return new ScoreResult(totalScore, lcScore, rcScore, part1Score, part2Score, part3Score, part4Score, part5Score, part6Score, part7Score);
     }
+
 
     @Override
     public Messenger deleteById(Long id) {

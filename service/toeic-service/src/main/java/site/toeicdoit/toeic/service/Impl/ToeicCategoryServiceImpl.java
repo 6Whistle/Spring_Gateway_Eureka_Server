@@ -1,4 +1,4 @@
-package site.toeicdoit.toeic.service.Impl;
+package site.toeicdoit.toeic.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,7 @@ import site.toeicdoit.toeic.domain.dto.ToeicCategoryDto;
 import site.toeicdoit.toeic.domain.model.mysql.ToeicCategoryModel;
 import site.toeicdoit.toeic.domain.vo.Messenger;
 import site.toeicdoit.toeic.repository.ToeicCategoryRepository;
+import site.toeicdoit.toeic.repository.ToeicRepository;
 import site.toeicdoit.toeic.service.ToeicCategoryService;
 
 import java.util.List;
@@ -21,43 +22,12 @@ import java.util.stream.Collectors;
 public class ToeicCategoryServiceImpl implements ToeicCategoryService {
 
     private final ToeicCategoryRepository toeicCategoryRepository;
+    private final ToeicRepository toeicRepository;
 
-    @Override
-    public List<ToeicCategoryModel> findAllByExam() {
-        return toeicCategoryRepository.findAllByExam();
-    }
-
-    @Override
-    public List<ToeicCategoryModel> findAllByTest() {
-        return toeicCategoryRepository.findAllByTest();
-    }
-
-    @Override
-    public List<ToeicCategoryModel> findAllByLevel(Long level) {
-        return toeicCategoryRepository.findAllByLevel(level);
-    }
-
-    @Override
-    public List<ToeicCategoryModel> findAllByPart(String part) {
-        return toeicCategoryRepository.findAllByPart(part);
-    }
 
     @Override
     public Messenger save(ToeicCategoryDto toeicCategoryDto) {
-        try {
-            ToeicCategoryModel entity = dtoToEntity(toeicCategoryDto);
-            toeicCategoryRepository.save(entity);
-            return Messenger.builder()
-                    .message("Successfully saved")
-                    .state(true)
-                    .build();
-        } catch (Exception e) {
-            log.error("Error saving ToeicCategoryDto: ", e);
-            return Messenger.builder()
-                    .message("Error saving data")
-                    .state(false)
-                    .build();
-        }
+        return null;
     }
 
     @Override
@@ -142,4 +112,6 @@ public class ToeicCategoryServiceImpl implements ToeicCategoryService {
             return false;
         }
     }
+
+
 }

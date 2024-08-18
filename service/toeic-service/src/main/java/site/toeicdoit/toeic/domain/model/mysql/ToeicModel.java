@@ -1,7 +1,7 @@
 package site.toeicdoit.toeic.domain.model.mysql;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,19 +18,16 @@ public class ToeicModel extends BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long level;
-    private String part; // 문제 유형
+    private String part;
     private String question;
     private String answer;
     private String description;
-    private String image; //문제 이미지
-
+    private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "toeicCategory_id")
-    @JsonBackReference
     private ToeicCategoryModel toeicCategoryId;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "toeicId", cascade = CascadeType.ALL, orphanRemoval = true)
-
     private OptionModel optionId;
 }

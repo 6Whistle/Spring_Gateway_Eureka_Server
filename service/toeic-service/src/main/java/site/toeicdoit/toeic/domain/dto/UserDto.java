@@ -3,6 +3,8 @@ package site.toeicdoit.toeic.domain.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,7 +25,7 @@ public class UserDto {
 
     private Long calenderId;
 
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 }

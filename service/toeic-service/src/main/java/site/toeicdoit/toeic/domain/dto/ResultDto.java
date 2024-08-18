@@ -1,8 +1,10 @@
 package site.toeicdoit.toeic.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -31,14 +33,18 @@ public class ResultDto {
     private String scorePart5;
     private String scorePart6;
     private String scorePart7;
+    private boolean take; 
 
-    private String createdAt;
-    private String updatedAt;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime createdAt;
 
-
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime updatedAt;
 
     private List<ResultDataDto> data;
     private List<?> barData;
+
+    private RecentResultsDto recentResults;
 
     @Builder
     @Data
@@ -47,7 +53,7 @@ public class ResultDto {
     public static class ResultDataDto {
         private Long toeicId;
         private String answer;
-        private Integer part; // part 필드 추가
+        private Integer part;
 
         @Override
         public String toString() {
@@ -55,4 +61,14 @@ public class ResultDto {
         }
     }
 
+    @Builder
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RecentResultsDto {
+        private List<Integer> exam;
+        private List<Integer> level;
+        private List<Integer> part;
+        private List<Integer> test;
+    }
 }

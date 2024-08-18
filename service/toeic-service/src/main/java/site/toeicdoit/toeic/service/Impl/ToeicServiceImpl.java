@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.toeicdoit.toeic.domain.dto.ToeicCategoryDto;
 import site.toeicdoit.toeic.domain.dto.ToeicDto;
-import site.toeicdoit.toeic.domain.model.mysql.ToeicCategoryModel;
 import site.toeicdoit.toeic.domain.model.mysql.ToeicModel;
 import site.toeicdoit.toeic.domain.vo.Messenger;
 import site.toeicdoit.toeic.repository.ToeicRepository;
@@ -88,7 +86,6 @@ public class ToeicServiceImpl implements ToeicService {
 
     @Override
     public List<ToeicDto> findAllByUserId(Long userId) {
-        // 유저 ID로 데이터 검색 로직 추가
         return List.of();
     }
 

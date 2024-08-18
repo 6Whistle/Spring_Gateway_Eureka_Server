@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 public interface ResultService extends QueryService<ResultDto>, CommandService<ResultDto> {
 
+    // DTO를 엔티티로 변환
     default ResultModel dtoToEntity(ResultDto dto) {
         String formattedUserAnswer = dto.getData().stream()
                 .map(ResultDto.ResultDataDto::toString)
                 .collect(Collectors.joining(", "));
-
 
         return ResultModel.builder()
                 .id(dto.getId())
@@ -29,11 +29,10 @@ public interface ResultService extends QueryService<ResultDto>, CommandService<R
                 .scorePart6(dto.getScorePart6())
                 .scorePart7(dto.getScorePart7())
                 .userAnswer(formattedUserAnswer)
-
                 .build();
-
     }
 
+    // 엔티티를 DTO로 변환
     default ResultDto entityToDto(ResultModel entity) {
         return ResultDto.builder()
                 .id(entity.getId())
@@ -63,6 +62,8 @@ public interface ResultService extends QueryService<ResultDto>, CommandService<R
                         entity.getScorePart6(),
                         entity.getScorePart7()
                 ))
+                .lcAllScore(entity.getScore())
+                .rcAllScore(entity.getScore())
                 .build();
     }
 
@@ -90,6 +91,4 @@ public interface ResultService extends QueryService<ResultDto>, CommandService<R
     List<Object[]> findScoreByUserId(Long userId, Long categoryId);
 
     Messenger getRecentResults(Long userId);
-
-
 }

@@ -33,7 +33,10 @@ public class ResultDto {
     private String scorePart5;
     private String scorePart6;
     private String scorePart7;
-    private boolean take; 
+    private boolean take;
+
+    private String rcAllScore;
+    private String lcAllScore;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
